@@ -308,7 +308,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 246531678
+  randomSeed: 1841696450
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -356,7 +356,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 10
+      scalar: 11
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -704,7 +704,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 10000
+    maxNumParticles: 100000
     size3D: 0
     rotation3D: 0
     gravityModifier:
@@ -752,7 +752,7 @@ ParticleSystem:
     serializedVersion: 5
     enabled: 1
     type: 4
-    angle: 25
+    angle: 30
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 1
@@ -773,7 +773,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 1
+      value: 0.01
       mode: 0
       spread: 0
       speed:
@@ -868,7 +868,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1000
+      scalar: 10000
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -3587,7 +3587,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1491659358}
   - component: {fileID: 1491659357}
-  - component: {fileID: 1491659356}
   - component: {fileID: 1491659355}
   - component: {fileID: 1491659354}
   m_Layer: 0
@@ -3605,13 +3604,6 @@ AudioListener:
   m_GameObject: {fileID: 1491659353}
   m_Enabled: 1
 --- !u!124 &1491659355
-Behaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1491659353}
-  m_Enabled: 1
---- !u!92 &1491659356
 Behaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -3675,6 +3667,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2033992107}
   - component: {fileID: 2033992106}
+  - component: {fileID: 2033992109}
   - component: {fileID: 2033992105}
   - component: {fileID: 2033992104}
   - component: {fileID: 2033992108}
@@ -3762,3 +3755,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 174a4293b34a04d649076788d50fc32e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!136 &2033992109
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2033992103}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 11.19
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
