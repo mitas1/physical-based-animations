@@ -24,13 +24,27 @@ const (
 type Particle struct {
 	pos      pixel.Vec
 	speed    pixel.Vec
+	mass     float64
 	sprite   pixel.Sprite
 	lifespan float64
 	alive    float64
 }
 
 func (p *Particle) addGravity(dt float64) {
-	p.speed = p.speed.Add(Gravity.Scaled(dt * 100))
+	p.speed = p.speed.Add(Gravity.Scaled(dt * p.mass)) // v_{t+1} = v_{t} + h*(F/m)
+}
+
+func (particleSystem *ParticleSystem) killOldParticles(minX float64, maxX float64, minY float64) {
+	var aliveParticles []Particle
+	for _, particle := range particleSystem.particles {
+		if particle.alive < particle.lifespan &&
+			particle.pos.X >= minX &&
+			particle.pos.X <= maxX &&
+			particle.pos.Y >= minY {
+			aliveParticles = append(aliveParticles, particle)
+		}
+	}
+	particleSystem.particles = append([]Particle{}, aliveParticles...)
 }
 
 // ParticleSystem represents system of particles with and rate of particle generation per second

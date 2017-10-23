@@ -30,7 +30,7 @@ func updateParticles(particles []Particle, batch *pixel.Batch, dt float64, cam p
 func newPosition(particle Particle, dt float64, mode PositionIntegrationMethod) (pixel.Vec, error) {
 	switch mode {
 	case ExplicitEuler:
-		return ExplicitEulerIntegrator(particle.pos, particle.speed, dt), nil
+		return particle.ExplicitEulerIntegrator(dt), nil
 	case MidPoint:
 		return particle.pos, errors.New("Unimplemented")
 	case Verlet:
@@ -82,6 +82,8 @@ func run() {
 		angle: 60.0,
 	}
 
+	timeForOneParticle := 1.0 / float64(particleSystem.pps)
+
 	last := time.Now()
 	for !win.Closed() {
 		dt := time.Since(last).Seconds()
@@ -97,17 +99,18 @@ func run() {
 
 		batch.Draw(win)
 
-		if timeElapsed > 1.0/float64(particleSystem.pps) {
+		for timeElapsed > timeForOneParticle {
 			angle := (rand.Float64() - 0.5) * (particleSystem.angle * (math.Pi / 180))
 			particle := Particle{
 				pos:      particleSystem.pos,
-				speed:    pixel.V(0, 1000.0).Rotated(angle),
+				speed:    pixel.V(0, 500.0).Rotated(angle),
+				mass:     50,
 				sprite:   *particleSprite,
 				lifespan: 10.0,
 				alive:    0.0,
 			}
 			particleSystem.particles = append(particleSystem.particles, particle)
-			timeElapsed = 1.0/float64(particleSystem.pps) - timeElapsed
+			timeElapsed = timeElapsed - timeForOneParticle
 		}
 
 		win.Update()
@@ -115,7 +118,11 @@ func run() {
 		frames++
 		select {
 		case <-second:
-			particleSystem.particles = killOldParticles(particleSystem.particles, win)
+			particleSystem.killOldParticles(
+				win.Bounds().Min.X,
+				win.Bounds().Max.X,
+				win.Bounds().Min.X,
+			)
 			win.SetTitle(fmt.Sprintf("%s | FPS: %d | particles %d", cfg.Title, frames, len(particleSystem.particles)))
 			frames = 0
 		default:
