@@ -23,6 +23,7 @@ func updateParticles(particles []Particle, batch *pixel.Batch, dt float64, cam p
 		particles[i].pos = newPos
 		particles[i].alive += dt
 		particles[i].sprite.Draw(batch, pixel.IM.Moved(cam.Unproject(particles[i].pos)))
+		particles[i].addGravity(dt)
 	}
 }
 
@@ -77,7 +78,7 @@ func run() {
 
 	particleSystem := ParticleSystem{
 		pos:   win.Bounds().Center().Sub(pixel.V(0.0, win.Bounds().H()/4.0)),
-		pps:   100,
+		pps:   1000,
 		angle: 60.0,
 	}
 
@@ -100,7 +101,7 @@ func run() {
 			angle := (rand.Float64() - 0.5) * (particleSystem.angle * (math.Pi / 180))
 			particle := Particle{
 				pos:      particleSystem.pos,
-				speed:    pixel.V(0, 100.0).Rotated(angle),
+				speed:    pixel.V(0, 1000.0).Rotated(angle),
 				sprite:   *particleSprite,
 				lifespan: 10.0,
 				alive:    0.0,

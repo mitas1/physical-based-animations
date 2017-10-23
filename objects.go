@@ -2,6 +2,12 @@ package main
 
 import "github.com/faiface/pixel"
 
+// Gravity is vector representing standard gravity force
+var Gravity = pixel.Vec{
+	X: 0.0,
+	Y: -9.81,
+}
+
 // PositionIntegrationMethod is enum for choosing method for particle position integration
 type PositionIntegrationMethod int
 
@@ -21,6 +27,10 @@ type Particle struct {
 	sprite   pixel.Sprite
 	lifespan float64
 	alive    float64
+}
+
+func (p *Particle) addGravity(dt float64) {
+	p.speed = p.speed.Add(Gravity.Scaled(dt * 100))
 }
 
 // ParticleSystem represents system of particles with and rate of particle generation per second
