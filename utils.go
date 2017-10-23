@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/pixelgl"
 )
 
 func loadPicture(path string) (pixel.Picture, error) {
@@ -20,10 +21,13 @@ func loadPicture(path string) (pixel.Picture, error) {
 	return pixel.PictureDataFromImage(img), nil
 }
 
-func killOldParticles(slice []Particle) []Particle {
+func killOldParticles(slice []Particle, win *pixelgl.Window) []Particle {
 	i := 0
 	for i < len(slice) {
-		if slice[i].alive >= slice[i].lifespan {
+		if slice[i].alive >= slice[i].lifespan ||
+			slice[i].pos.X < win.Bounds().Min.X ||
+			slice[i].pos.X > win.Bounds().Max.X ||
+			slice[i].pos.Y < win.Bounds().Min.Y {
 			slice = append(slice[:i], slice[i+1:]...)
 		} else {
 			i++

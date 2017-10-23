@@ -115,7 +115,7 @@ func run() {
 		frames++
 		select {
 		case <-second:
-			particleSystem.particles = killOldParticles(particleSystem.particles)
+			particleSystem.particles = killOldParticles(particleSystem.particles, win)
 			win.SetTitle(fmt.Sprintf("%s | FPS: %d | particles %d", cfg.Title, frames, len(particleSystem.particles)))
 			frames = 0
 		default:
