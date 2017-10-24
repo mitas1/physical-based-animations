@@ -103,7 +103,7 @@ func run() {
 			angle := (rand.Float64() - 0.5) * (particleSystem.angle * (math.Pi / 180))
 			particle := Particle{
 				pos:      particleSystem.pos,
-				speed:    pixel.V(0, 500.0).Rotated(angle),
+				speed:    pixel.V(0, 600.0).Rotated(angle),
 				mass:     50,
 				sprite:   *particleSprite,
 				lifespan: 10.0,
