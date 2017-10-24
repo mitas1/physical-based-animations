@@ -1,32 +1,39 @@
-# physical-based-animations
-PHYSICAL BASED ANIMATIONS AND MATHEMATICAL MODELLING
+# Physical based animations and mathematical modelling
+
 
 ## Requirements
 
-For running this package it is required to have [golang](https://golang.org) programming environment.
+For running this package it is required to have [golang](https://golang.org) programming
+environment.
 
-This project also uses library `Pixel` for `Go` programming language. For it's requirements and setup instructions check the [github](https://github.com/faiface/pixel).
+This project also uses library `Pixel` for `Go` programming language. For it's requirements and
+setup instructions check the [github](https://github.com/faiface/pixel).
 
-## Usage
 
-For starting this program it is required to clone this repository:
+## Building and running
+
+First you need to install dependencies:
 
 ```sh
-mkdir -p $(go env GOPATH)/src/github.com/mitas1
-git clone https://github.com/mitas1/physical-based-animations.git $(go env GOPATH)/src/github.com/mitas1
+go get ./...
 ```
 
-And then install it and run
+Then you can start the project using:
 
 ```sh
-cd $(go env GOPATH)/src/github.com/mitas1/physical-based-animations
+go run *.go
+```
+
+Or compile your project using:
+
+```sh
 go install
-$(go env GOPATH)/bin/physical-based-animations
 ```
 
-Or for easier execution first export `$GOPATH/bin` to your `PATH` and use the executable:
+**NOTE: You will probably need to set up your `$GOBIN` env. For more information
+[see](https://github.com/alco/gostart).**
 
-```sh
-go install
-physical-based-animations
-```
+
+## Authors
+
+Marián Skrip, Samuel Mitas
