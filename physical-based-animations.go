@@ -16,7 +16,7 @@ import (
 
 func updateParticles(particles []Particle, batch *pixel.Batch, dt float64, cam pixel.Matrix) {
 	for i := 0; i < len(particles); i++ {
-		newPos, err := newPosition(particles[i], dt, ExplicitEuler)
+		newPos, err := newPosition(&particles[i], dt, ExplicitEuler)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -24,11 +24,10 @@ func updateParticles(particles []Particle, batch *pixel.Batch, dt float64, cam p
 		particles[i].position = newPos
 		particles[i].alive += dt
 		particles[i].sprite.Draw(batch, pixel.IM.Moved(cam.Unproject(particles[i].position)))
-		particles[i].AddGravity(dt)
 	}
 }
 
-func newPosition(particle Particle, dt float64, mode PositionIntegrationMethod) (pixel.Vec, error) {
+func newPosition(particle *Particle, dt float64, mode PositionIntegrationMethod) (pixel.Vec, error) {
 	switch mode {
 	case ExplicitEuler:
 		return particle.ExplicitEulerIntegrator(dt), nil
@@ -74,6 +73,7 @@ func run() {
 		second      = time.Tick(time.Second)
 		frames      = 0
 		timeElapsed = 0.0
+		startSpeed  = 9.905
 	)
 
 	particleSystem := ParticleSystem{
@@ -103,8 +103,7 @@ func run() {
 			angle := (rand.Float64() - 0.5) * (particleSystem.angle * (math.Pi / 180))
 			particle := Particle{
 				position: particleSystem.position,
-				speed:    pixel.V(0, 600.0).Rotated(angle),
-				mass:     50,
+				speed:    pixel.V(0, startSpeed).Rotated(angle),
 				sprite:   *particleSprite,
 				lifespan: 10.0,
 				alive:    0.0,

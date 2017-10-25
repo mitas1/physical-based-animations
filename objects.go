@@ -2,11 +2,14 @@ package main
 
 import "github.com/faiface/pixel"
 
-// Gravity is vector representing standard gravity force accelleration vector
+// Gravity is vector representing standard gravity force accelleration vector in m*s^{-2}
 var Gravity = pixel.Vec{
 	X: 0.0,
 	Y: -9.81,
 }
+
+// PixelsPerMeter is the number of pixels on screen that represent one meter in real life
+const PixelsPerMeter = 100.0
 
 // PositionIntegrationMethod is enum for choosing method for particle position integration
 type PositionIntegrationMethod int
@@ -22,17 +25,11 @@ const (
 
 // Particle represents particle object
 type Particle struct {
-	position pixel.Vec
-	speed    pixel.Vec
-	mass     float64
+	position pixel.Vec // in pixels
+	speed    pixel.Vec // in m*s^{-1}
 	sprite   pixel.Sprite
-	lifespan float64
-	alive    float64
-}
-
-// AddGravity changes speed vector based on gravity vector
-func (p *Particle) AddGravity(dt float64) {
-	p.speed = p.speed.Add(Gravity.Scaled(dt)) // v_{t+1} = v_{t} + h*(F/m)
+	lifespan float64 // in s
+	alive    float64 // in s
 }
 
 // KillOldParticles removes all particles that live up to their lifespan or are outside the
@@ -52,8 +49,8 @@ func (particleSystem *ParticleSystem) KillOldParticles(minX float64, maxX float6
 
 // ParticleSystem represents system of particles with and rate of particle generation per second
 type ParticleSystem struct {
-	position  pixel.Vec
+	position  pixel.Vec // in pixels
 	pps       int
-	angle     float64
+	angle     float64 // in degrees
 	particles []Particle
 }
