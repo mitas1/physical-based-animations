@@ -9,7 +9,7 @@ var Gravity = pixel.Vec{
 }
 
 // PixelsPerMeter is the number of pixels on screen that represent one meter in real life
-var PixelsPerMeter = 100.0
+const PixelsPerMeter = 100.0
 
 // PositionIntegrationMethod is enum for choosing method for particle position integration
 type PositionIntegrationMethod int
