@@ -22,7 +22,7 @@ const (
 
 // Particle represents particle object
 type Particle struct {
-	pos      pixel.Vec
+	position pixel.Vec
 	speed    pixel.Vec
 	mass     float64
 	sprite   pixel.Sprite
@@ -41,9 +41,9 @@ func (particleSystem *ParticleSystem) KillOldParticles(minX float64, maxX float6
 	var aliveParticles []Particle
 	for _, particle := range particleSystem.particles {
 		if particle.alive < particle.lifespan &&
-			particle.pos.X >= minX &&
-			particle.pos.X <= maxX &&
-			particle.pos.Y >= minY {
+			particle.position.X >= minX &&
+			particle.position.X <= maxX &&
+			particle.position.Y >= minY {
 			aliveParticles = append(aliveParticles, particle)
 		}
 	}
@@ -52,7 +52,7 @@ func (particleSystem *ParticleSystem) KillOldParticles(minX float64, maxX float6
 
 // ParticleSystem represents system of particles with and rate of particle generation per second
 type ParticleSystem struct {
-	pos       pixel.Vec
+	position  pixel.Vec
 	pps       int
 	angle     float64
 	particles []Particle

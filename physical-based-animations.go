@@ -20,9 +20,9 @@ func updateParticles(particles []Particle, batch *pixel.Batch, dt float64, cam p
 		if err != nil {
 			fmt.Println(err.Error())
 		}
-		particles[i].pos = newPos
+		particles[i].position = newPos
 		particles[i].alive += dt
-		particles[i].sprite.Draw(batch, pixel.IM.Moved(cam.Unproject(particles[i].pos)))
+		particles[i].sprite.Draw(batch, pixel.IM.Moved(cam.Unproject(particles[i].position)))
 		particles[i].AddGravity(dt)
 	}
 }
@@ -32,11 +32,11 @@ func newPosition(particle Particle, dt float64, mode PositionIntegrationMethod) 
 	case ExplicitEuler:
 		return particle.ExplicitEulerIntegrator(dt), nil
 	case MidPoint:
-		return particle.pos, errors.New("Unimplemented")
+		return particle.position, errors.New("Unimplemented")
 	case Verlet:
-		return particle.pos, errors.New("Unimplemented")
+		return particle.position, errors.New("Unimplemented")
 	default:
-		return particle.pos, errors.New("Unknown method of position integration")
+		return particle.position, errors.New("Unknown method of position integration")
 	}
 
 }
@@ -77,9 +77,9 @@ func run() {
 	)
 
 	particleSystem := ParticleSystem{
-		pos:   win.Bounds().Center().Sub(pixel.V(0.0, win.Bounds().H()/4.0)),
-		pps:   1000,
-		angle: 60.0,
+		position: win.Bounds().Center().Sub(pixel.V(0.0, win.Bounds().H()/4.0)),
+		pps:      1000,
+		angle:    60.0,
 	}
 
 	timeForOneParticle := 1.0 / float64(particleSystem.pps)
@@ -102,7 +102,7 @@ func run() {
 		for timeElapsed > timeForOneParticle {
 			angle := (rand.Float64() - 0.5) * (particleSystem.angle * (math.Pi / 180))
 			particle := Particle{
-				pos:      particleSystem.pos,
+				position: particleSystem.position,
 				speed:    pixel.V(0, 600.0).Rotated(angle),
 				mass:     50,
 				sprite:   *particleSprite,
