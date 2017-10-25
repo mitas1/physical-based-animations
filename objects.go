@@ -2,7 +2,7 @@ package main
 
 import "github.com/faiface/pixel"
 
-// Gravity is vector representing standard gravity force
+// Gravity is vector representing standard gravity force accelleration vector
 var Gravity = pixel.Vec{
 	X: 0.0,
 	Y: -9.81,
@@ -30,11 +30,14 @@ type Particle struct {
 	alive    float64
 }
 
-func (p *Particle) addGravity(dt float64) {
-	p.speed = p.speed.Add(Gravity.Scaled(dt * p.mass)) // v_{t+1} = v_{t} + h*(F/m)
+// AddGravity changes speed vector based on gravity vector
+func (p *Particle) AddGravity(dt float64) {
+	p.speed = p.speed.Add(Gravity.Scaled(dt)) // v_{t+1} = v_{t} + h*(F/m)
 }
 
-func (particleSystem *ParticleSystem) killOldParticles(minX float64, maxX float64, minY float64) {
+// KillOldParticles removes all particles that live up to their lifespan or are outside the
+// boundaries of the view
+func (particleSystem *ParticleSystem) KillOldParticles(minX float64, maxX float64, minY float64) {
 	var aliveParticles []Particle
 	for _, particle := range particleSystem.particles {
 		if particle.alive < particle.lifespan &&

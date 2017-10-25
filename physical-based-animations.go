@@ -23,7 +23,7 @@ func updateParticles(particles []Particle, batch *pixel.Batch, dt float64, cam p
 		particles[i].pos = newPos
 		particles[i].alive += dt
 		particles[i].sprite.Draw(batch, pixel.IM.Moved(cam.Unproject(particles[i].pos)))
-		particles[i].addGravity(dt)
+		particles[i].AddGravity(dt)
 	}
 }
 
@@ -118,7 +118,7 @@ func run() {
 		frames++
 		select {
 		case <-second:
-			particleSystem.killOldParticles(
+			particleSystem.KillOldParticles(
 				win.Bounds().Min.X,
 				win.Bounds().Max.X,
 				win.Bounds().Min.X,
