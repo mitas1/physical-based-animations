@@ -20,6 +20,7 @@ func updateParticles(particles []Particle, batch *pixel.Batch, dt float64, cam p
 		if err != nil {
 			fmt.Println(err.Error())
 		}
+
 		particles[i].position = newPos
 		particles[i].alive += dt
 		particles[i].sprite.Draw(batch, pixel.IM.Moved(cam.Unproject(particles[i].position)))
@@ -38,7 +39,6 @@ func newPosition(particle Particle, dt float64, mode PositionIntegrationMethod) 
 	default:
 		return particle.position, errors.New("Unknown method of position integration")
 	}
-
 }
 
 func run() {
@@ -123,7 +123,8 @@ func run() {
 				win.Bounds().Max.X,
 				win.Bounds().Min.X,
 			)
-			win.SetTitle(fmt.Sprintf("%s | FPS: %d | particles %d", cfg.Title, frames, len(particleSystem.particles)))
+			win.SetTitle(fmt.Sprintf("%s | FPS: %d | particles %d", cfg.Title, frames,
+				len(particleSystem.particles)))
 			frames = 0
 		default:
 		}
