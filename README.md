@@ -16,6 +16,8 @@ First you need to install dependencies:
 
 ```sh
 go get ./...
+go get github.com/jteeuwen/go-bindata
+go-bindata -debug assets/...
 ```
 
 Then you can start the project using:
