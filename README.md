@@ -12,28 +12,19 @@ setup instructions check the [github](https://github.com/faiface/pixel).
 
 ## Building and running
 
-First you need to install dependencies:
+First you need to install dependencies build the project and run with:
 
 ```sh
-go get ./...
-go get github.com/jteeuwen/go-bindata
-go-bindata -debug assets/...
+$ make
+$ make build
+$ ./physical-based-animations
 ```
 
-Then you can start the project using:
+Or compile and run the project using:
 
 ```sh
-go run *.go
+$ make run
 ```
-
-Or compile your project using:
-
-```sh
-go install
-```
-
-**NOTE: You will probably need to set up your `$GOBIN` env. For more information
-[see](https://github.com/alco/gostart).**
 
 
 ## Authors
