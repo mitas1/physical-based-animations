@@ -12,7 +12,7 @@ setup instructions check the [github](https://github.com/faiface/pixel).
 
 ## Building and running
 
-First you need to install dependencies build the project and run with:
+First you need to install dependencies, build the project, and run with:
 
 ```sh
 $ make
