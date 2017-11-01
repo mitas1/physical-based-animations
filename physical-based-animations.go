@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	_ "image/png"
 	"math"
 	"math/rand"
 	"time"
@@ -53,7 +52,12 @@ func run() {
 
 	win.SetSmooth(true)
 
-	particleImage, err := loadPicture("assets/sprites/particle.png")
+	data, err := Asset("assets/sprites/particle.png")
+	if err != nil {
+		panic(err)
+	}
+
+	particleImage, err := loadPicture(data)
 	if err != nil {
 		panic(err)
 	}
