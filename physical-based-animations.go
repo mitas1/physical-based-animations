@@ -15,7 +15,7 @@ import (
 
 func updateParticles(particles []Particle, batch *pixel.Batch, dt float64, cam pixel.Matrix) {
 	for i := 0; i < len(particles); i++ {
-		newPos, err := newPosition(&particles[i], dt, ExplicitEuler)
+		newPos, err := newPosition(&particles[i], dt, Verlet)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -33,7 +33,7 @@ func newPosition(particle *Particle, dt float64, mode PositionIntegrationMethod)
 	case MidPoint:
 		return particle.position, errors.New("Unimplemented")
 	case Verlet:
-		return particle.position, errors.New("Unimplemented")
+		return particle.VerletIntegrator(dt), nil
 	default:
 		return particle.position, errors.New("Unknown method of position integration")
 	}
@@ -87,6 +87,7 @@ func run() {
 	}
 
 	timeForOneParticle := 1.0 / float64(particleSystem.pps)
+	prevDt := 0.002
 
 	last := time.Now()
 	for !win.Closed() {
@@ -104,13 +105,19 @@ func run() {
 		batch.Draw(win)
 
 		for timeElapsed > timeForOneParticle {
+			pos := particleSystem.position
 			angle := (rand.Float64() - 0.5) * (particleSystem.angle * (math.Pi / 180))
+			speed := pixel.V(0, startSpeed).Rotated(angle)
+			nextPost := pos.Add(speed.Scaled(PixelsPerMeter).Scaled(prevDt)).Add(Gravity.Scaled(PixelsPerMeter).Scaled(prevDt * prevDt * 0.5))
+			// fmt.Printf("pos: %f %f	prev: %f %f\n", pos.X, pos.Y, prevPos.X, prevPos.Y)
 			particle := Particle{
-				position: particleSystem.position,
-				speed:    pixel.V(0, startSpeed).Rotated(angle),
-				sprite:   *particleSprite,
-				lifespan: 10.0,
-				alive:    0.0,
+				position:     pos,
+				nextPosition: nextPost,
+				speed:        speed,
+				prevDt:       prevDt,
+				sprite:       *particleSprite,
+				lifespan:     100.0,
+				alive:        0.0,
 			}
 			particleSystem.particles = append(particleSystem.particles, particle)
 			timeElapsed = timeElapsed - timeForOneParticle

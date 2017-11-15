@@ -25,11 +25,13 @@ const (
 
 // Particle represents particle object
 type Particle struct {
-	position pixel.Vec // in pixels
-	speed    pixel.Vec // in m*s^{-1}
-	sprite   pixel.Sprite
-	lifespan float64 // in s
-	alive    float64 // in s
+	position     pixel.Vec    // in pixels
+	nextPosition pixel.Vec    // in pixels
+	prevDt       float64      // in s
+	speed        pixel.Vec    // in m*s^{-1}
+	sprite       pixel.Sprite // particle display image
+	lifespan     float64      // in s
+	alive        float64      // in s
 }
 
 // KillOldParticles removes all particles that live up to their lifespan or are outside the
