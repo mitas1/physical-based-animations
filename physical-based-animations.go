@@ -131,7 +131,7 @@ func run() {
 			particleSystem.KillOldParticles(
 				win.Bounds().Min.X,
 				win.Bounds().Max.X,
-				win.Bounds().Min.X,
+				win.Bounds().Min.Y,
 			)
 			win.SetTitle(fmt.Sprintf("%s | FPS: %d | particles %d", cfg.Title, frames,
 				len(particleSystem.particles)))
