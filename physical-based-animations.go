@@ -64,8 +64,6 @@ func run() {
 
 	batch := pixel.NewBatch(&pixel.TrianglesData{}, particleImage)
 
-
-
 	particleSprite := pixel.NewSprite(
 		particleImage,
 		pixel.R(
@@ -98,30 +96,31 @@ func run() {
 		win: win,
 	}
 
+	gui.CreateBatch("assets/sprites/spritesheet.png")
+
 	playButton := Button{
-		position: pixel.V(10, 10),
-		bounds: pixel.R(0, 0, 80, 80),
-		image: "assets/sprites/play.png",
-		onClick: HandlePlayClick,
+		position:     pixel.V(10, 10),
+		croppingArea: pixel.R(0, 80, 80, 160),
+		bounds:       pixel.R(0, 0, 80, 80),
+		onClick:      HandlePlayClick,
 	}
 
 	gui.NewButton(playButton)
 
 	pauseButton := Button{
-		position:  pixel.V(10, 100),
-		bounds: pixel.R(0, 0, 80, 80),
-		image: "assets/sprites/pause.png",
-		onClick: HandlePauseClick,
+		position:     pixel.V(10, 100),
+		croppingArea: pixel.R(0, 0, 80, 80),
+		bounds:       pixel.R(0, 0, 80, 80),
+		onClick:      HandlePauseClick,
 	}
 
 	gui.NewButton(pauseButton)
 
 	cam := pixel.IM.Scaled(camPos, 1.0).Moved(win.Bounds().Center().Sub(camPos))
-	
+
 	win.SetMatrix(cam)
 
 	gui.SetMatrix(cam)
-
 	gui.BindState(&state)
 	gui.MainLoop()
 
@@ -129,19 +128,18 @@ func run() {
 
 		win.Update()
 
-		if (gui.GetState().running) {
-			win.Clear(colornames.Whitesmoke)
-			batch.Clear()
+		batch.Clear()
 
+		if gui.GetState().running {
 			dt := time.Since(last).Seconds()
 			last = time.Now()
 			timeElapsed += dt
 
 			updateParticles(particleSystem.particles, batch, dt, cam)
 
-			batch.Draw(win)
+			win.Clear(colornames.Whitesmoke)
 			gui.Draw()
-
+			batch.Draw(win)
 
 			for timeElapsed > timeForOneParticle {
 				pos := particleSystem.position
@@ -162,7 +160,7 @@ func run() {
 				particleSystem.particles = append(particleSystem.particles, particle)
 				timeElapsed = timeElapsed - timeForOneParticle
 			}
-	
+
 			frames++
 			select {
 			case <-second:
@@ -176,6 +174,8 @@ func run() {
 				frames = 0
 			default:
 			}
+		} else {
+			last = time.Now()
 		}
 	}
 }
