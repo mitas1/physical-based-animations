@@ -1,5 +1,6 @@
 TARGET := physical-based-animations
 GOPATH := $$(go env GOPATH)
+GOBIN := $(GOPATH)/bin
 BINDATA := bindata.go
 .DEFAULT_GOAL: $(TARGET)
 
@@ -13,14 +14,14 @@ LDFLAGS=-ldflags "-X=main.Version=$(VERSION) -X=main.Build=$(BUILD)"
 all: check install goinstall
 
 $(BINDATA):
-	@go get github.com/jteeuwen/go-bindata
+	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go get github.com/jteeuwen/go-bindata
 	@$(GOPATH)/bin/go-bindata -debug assets/...
 
 $(TARGET): *.go
-	@go build $(LDFLAGS) -o $(TARGET)
+	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(TARGET)
 
 install: $(BINDATA)
-	@go get ./...
+	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go get ./...
 
 build: install $(TARGET)
 	@true
@@ -30,7 +31,7 @@ clean:
 	@rm -f $(TARGET)
 
 goinstall: install
-	@go install $(LDFLAGS)
+	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go install $(LDFLAGS)
 
 uninstall: clean
 	@rm -f $$(which $(GOPATH)/bin/${TARGET})
@@ -39,7 +40,7 @@ check:
 	@test -z $(gofmt -l physical-based-animations.go | tee /dev/stderr) || \
 	echo "[WARN] Fix formatting issues with 'make fmt'"
 	@for d in $$(go list ./... | grep -v /vendor/); do $(GOPATH)/bin/golint $${d}; done
-	@go tool vet *.go
+	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go tool vet *.go
 
 run: goinstall
 	@$(GOPATH)/bin/$(TARGET) &
