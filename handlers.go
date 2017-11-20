@@ -1,13 +1,19 @@
 package main
 
 var state = HandledOptions{
-	running: true,
+	paused:  false,
+	stopped: false,
 }
 
 func HandlePlayClick(state *HandledOptions) {
-	state.running = true
+	state.paused = false
+	state.stopped = false
 }
 
 func HandlePauseClick(state *HandledOptions) {
-	state.running = false
+	state.paused = true
+}
+
+func HandleStopClick(state *HandledOptions) {
+	state.stopped = true
 }

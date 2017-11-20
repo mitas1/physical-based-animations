@@ -24,7 +24,8 @@ type GUI struct {
 }
 
 type HandledOptions struct {
-	running bool
+	paused  bool
+	stopped bool
 }
 
 const (

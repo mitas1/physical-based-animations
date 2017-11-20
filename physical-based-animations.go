@@ -100,7 +100,7 @@ func run() {
 
 	playButton := Button{
 		position:     pixel.V(10, 10),
-		croppingArea: pixel.R(0, 80, 80, 160),
+		croppingArea: pixel.R(0, 160, 80, 240),
 		bounds:       pixel.R(0, 0, 80, 80),
 		onClick:      HandlePlayClick,
 	}
@@ -109,12 +109,21 @@ func run() {
 
 	pauseButton := Button{
 		position:     pixel.V(10, 100),
-		croppingArea: pixel.R(0, 0, 80, 80),
+		croppingArea: pixel.R(0, 80, 80, 160),
 		bounds:       pixel.R(0, 0, 80, 80),
 		onClick:      HandlePauseClick,
 	}
 
 	gui.NewButton(pauseButton)
+
+	stopButton := Button{
+		position:     pixel.V(10, 190),
+		croppingArea: pixel.R(0, 0, 80, 80),
+		bounds:       pixel.R(0, 0, 80, 80),
+		onClick:      HandleStopClick,
+	}
+
+	gui.NewButton(stopButton)
 
 	cam := pixel.IM.Scaled(camPos, 1.0).Moved(win.Bounds().Center().Sub(camPos))
 
@@ -130,7 +139,7 @@ func run() {
 
 		batch.Clear()
 
-		if gui.GetState().running {
+		if !gui.GetState().paused && !gui.GetState().stopped {
 			dt := time.Since(last).Seconds()
 			last = time.Now()
 			timeElapsed += dt
@@ -174,8 +183,15 @@ func run() {
 				frames = 0
 			default:
 			}
+		} else if gui.GetState().paused && !gui.GetState().stopped {
+			last = time.Now()
 		} else {
 			last = time.Now()
+			timeElapsed = 0
+			particleSystem.particles = particleSystem.particles[:0]
+			batch.Clear()
+			win.Clear(colornames.Whitesmoke)
+			gui.Draw()
 		}
 	}
 }
