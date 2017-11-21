@@ -132,6 +132,7 @@ func run() {
 	gui.SetMatrix(cam)
 	gui.BindState(&state)
 	gui.MainLoop()
+	gui.Draw()
 
 	for !win.Closed() {
 
@@ -147,7 +148,7 @@ func run() {
 			updateParticles(particleSystem.particles, batch, dt, cam)
 
 			win.Clear(colornames.Whitesmoke)
-			gui.Draw()
+			gui.batch.Draw(win)
 			batch.Draw(win)
 
 			for timeElapsed > timeForOneParticle {
@@ -191,7 +192,7 @@ func run() {
 			particleSystem.particles = particleSystem.particles[:0]
 			batch.Clear()
 			win.Clear(colornames.Whitesmoke)
-			gui.Draw()
+			gui.batch.Draw(gui.win)
 		}
 	}
 }

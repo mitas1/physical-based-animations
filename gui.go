@@ -92,5 +92,4 @@ func (gui *GUI) Draw() {
 		x1, y1 := widget.bounds.Center().XY()
 		widget.sprite.Draw(gui.batch, gui.matrix.Moved(pixel.V(x0, -y0).Sub(pixel.V(-x1, y1))))
 	}
-	gui.batch.Draw(gui.win)
 }
