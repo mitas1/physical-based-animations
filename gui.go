@@ -5,15 +5,16 @@ import (
 	"github.com/faiface/pixel/pixelgl"
 )
 
+// Button represents a gui button element
 type Button struct {
 	position     pixel.Vec
 	bounds       pixel.Rect
 	croppingArea pixel.Rect
-	image        string
 	onClick      func(options *HandledOptions)
 	sprite       *pixel.Sprite
 }
 
+// GUI represents an attributes of gui
 type GUI struct {
 	win         *pixelgl.Window
 	widgets     []Button
@@ -23,16 +24,13 @@ type GUI struct {
 	spritesheet pixel.Picture
 }
 
+// HandledOptions define options which may be controlled by gui elements
 type HandledOptions struct {
 	paused  bool
 	stopped bool
 }
 
-const (
-	menuWidth = 200
-	rowHeight = 60
-)
-
+// CreateBatch creates a batch where gui be drawed to
 func (gui *GUI) CreateBatch(imagePath string) {
 	pic, err := loadPicture(imagePath)
 	if err != nil {
@@ -43,10 +41,12 @@ func (gui *GUI) CreateBatch(imagePath string) {
 	gui.batch = pixel.NewBatch(&pixel.TrianglesData{}, pic)
 }
 
+// BindState binds a global state
 func (gui *GUI) BindState(state *HandledOptions) {
 	gui.state = state
 }
 
+// MainLoop starts a new goroutine where mouse events are handled
 func (gui *GUI) MainLoop() {
 	go func() {
 		for !gui.win.Closed() {
@@ -71,21 +71,25 @@ func (gui *GUI) handleClick(x, y float64) {
 	}
 }
 
+// GetState returns a gui.state
 func (gui *GUI) GetState() *HandledOptions {
 	return gui.state
 }
 
+// SetMatrix sets a matrix of gui
 func (gui *GUI) SetMatrix(matrix pixel.Matrix) {
 	x, y := matrix.Project(pixel.ZV).XY()
 	gui.matrix = pixel.IM.Moved(pixel.V(-x, y))
 }
 
+// NewButton creates a new button element
 func (gui *GUI) NewButton(button Button) {
 	button.sprite = pixel.NewSprite(gui.spritesheet, button.croppingArea)
 
 	gui.widgets = append(gui.widgets, button)
 }
 
+// Draw draws a gui to gui batch
 func (gui *GUI) Draw() {
 	for _, widget := range gui.widgets {
 		x0, y0 := widget.position.XY()

@@ -5,15 +5,15 @@ var state = HandledOptions{
 	stopped: false,
 }
 
-func HandlePlayClick(state *HandledOptions) {
+func handlePlayClick(state *HandledOptions) {
 	state.paused = false
 	state.stopped = false
 }
 
-func HandlePauseClick(state *HandledOptions) {
+func handlePauseClick(state *HandledOptions) {
 	state.paused = true
 }
 
-func HandleStopClick(state *HandledOptions) {
+func handleStopClick(state *HandledOptions) {
 	state.stopped = true
 }
