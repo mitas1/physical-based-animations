@@ -47,7 +47,7 @@ func newPosition(particle *Particle, dt float64, mode PositionIntegrationMethod)
 func run() {
 	cfg := pixelgl.WindowConfig{
 		Title:  "Particle System",
-		Bounds: pixel.R(0, 0, 1024, 768),
+		Bounds: pixel.R(0, 0, winWidth, winHeight),
 	}
 
 	win, err := pixelgl.NewWindow(cfg)
@@ -102,7 +102,7 @@ func run() {
 		position:     pixel.V(10, 10),
 		croppingArea: pixel.R(0, 160, 80, 240),
 		bounds:       pixel.R(0, 0, 80, 80),
-		onClick:      HandlePlayClick,
+		onClick:      handlePlayClick,
 	}
 
 	gui.NewButton(playButton)
@@ -111,7 +111,7 @@ func run() {
 		position:     pixel.V(10, 100),
 		croppingArea: pixel.R(0, 80, 80, 160),
 		bounds:       pixel.R(0, 0, 80, 80),
-		onClick:      HandlePauseClick,
+		onClick:      handlePauseClick,
 	}
 
 	gui.NewButton(pauseButton)
@@ -120,7 +120,7 @@ func run() {
 		position:     pixel.V(10, 190),
 		croppingArea: pixel.R(0, 0, 80, 80),
 		bounds:       pixel.R(0, 0, 80, 80),
-		onClick:      HandleStopClick,
+		onClick:      handleStopClick,
 	}
 
 	gui.NewButton(stopButton)
@@ -135,16 +135,14 @@ func run() {
 	gui.Draw()
 
 	for !win.Closed() {
-
 		win.Update()
-
-		batch.Clear()
 
 		if !gui.GetState().paused && !gui.GetState().stopped {
 			dt := time.Since(last).Seconds()
 			last = time.Now()
 			timeElapsed += dt
 
+			batch.Clear()
 			updateParticles(particleSystem.particles, batch, dt, cam)
 
 			win.Clear(colornames.Whitesmoke)
@@ -170,20 +168,6 @@ func run() {
 				particleSystem.particles = append(particleSystem.particles, particle)
 				timeElapsed = timeElapsed - timeForOneParticle
 			}
-
-			frames++
-			select {
-			case <-second:
-				particleSystem.KillOldParticles(
-					win.Bounds().Min.X,
-					win.Bounds().Max.X,
-					win.Bounds().Min.Y,
-				)
-				win.SetTitle(fmt.Sprintf("%s | FPS: %d | particles %d", cfg.Title, frames,
-					len(particleSystem.particles)))
-				frames = 0
-			default:
-			}
 		} else if gui.GetState().paused && !gui.GetState().stopped {
 			last = time.Now()
 		} else {
@@ -193,6 +177,20 @@ func run() {
 			batch.Clear()
 			win.Clear(colornames.Whitesmoke)
 			gui.batch.Draw(gui.win)
+		}
+
+		frames++
+		select {
+		case <-second:
+			particleSystem.KillOldParticles(
+				win.Bounds().Min.X,
+				win.Bounds().Max.X,
+				win.Bounds().Min.Y,
+			)
+			win.SetTitle(fmt.Sprintf("%s | FPS: %d | particles %d", cfg.Title, frames,
+				len(particleSystem.particles)))
+			frames = 0
+		default:
 		}
 	}
 }
