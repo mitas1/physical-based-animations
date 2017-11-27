@@ -13,6 +13,11 @@ import (
 	"github.com/faiface/pixel/pixelgl"
 )
 
+const (
+	winWidth  = 1024
+	winHeight = 768
+)
+
 func updateParticles(particles []Particle, batch *pixel.Batch, dt float64, cam pixel.Matrix) {
 	for i := 0; i < len(particles); i++ {
 		newPos, err := newPosition(&particles[i], dt, Verlet)
@@ -42,7 +47,7 @@ func newPosition(particle *Particle, dt float64, mode PositionIntegrationMethod)
 func run() {
 	cfg := pixelgl.WindowConfig{
 		Title:  "Particle System",
-		Bounds: pixel.R(0, 0, 1024, 768),
+		Bounds: pixel.R(0, 0, winWidth, winHeight),
 	}
 
 	win, err := pixelgl.NewWindow(cfg)
@@ -52,17 +57,13 @@ func run() {
 
 	win.SetSmooth(true)
 
-	data, err := Asset("assets/sprites/particle.png")
-	if err != nil {
-		panic(err)
-	}
-
-	particleImage, err := loadPicture(data)
+	particleImage, err := loadPicture("assets/sprites/particle.png")
 	if err != nil {
 		panic(err)
 	}
 
 	batch := pixel.NewBatch(&pixel.TrianglesData{}, particleImage)
+
 	particleSprite := pixel.NewSprite(
 		particleImage,
 		pixel.R(
@@ -90,40 +91,93 @@ func run() {
 	prevDt := 0.002
 
 	last := time.Now()
+
+	gui := GUI{
+		win: win,
+	}
+
+	gui.CreateBatch("assets/sprites/spritesheet.png")
+
+	playButton := Button{
+		position:     pixel.V(10, 10),
+		croppingArea: pixel.R(0, 160, 80, 240),
+		bounds:       pixel.R(0, 0, 80, 80),
+		onClick:      handlePlayClick,
+	}
+
+	gui.NewButton(playButton)
+
+	pauseButton := Button{
+		position:     pixel.V(10, 100),
+		croppingArea: pixel.R(0, 80, 80, 160),
+		bounds:       pixel.R(0, 0, 80, 80),
+		onClick:      handlePauseClick,
+	}
+
+	gui.NewButton(pauseButton)
+
+	stopButton := Button{
+		position:     pixel.V(10, 190),
+		croppingArea: pixel.R(0, 0, 80, 80),
+		bounds:       pixel.R(0, 0, 80, 80),
+		onClick:      handleStopClick,
+	}
+
+	gui.NewButton(stopButton)
+
+	cam := pixel.IM.Scaled(camPos, 1.0).Moved(win.Bounds().Center().Sub(camPos))
+
+	win.SetMatrix(cam)
+
+	gui.SetMatrix(cam)
+	gui.BindState(&state)
+	gui.MainLoop()
+	gui.Draw()
+
 	for !win.Closed() {
-		dt := time.Since(last).Seconds()
-		last = time.Now()
-		timeElapsed += dt
-
-		cam := pixel.IM.Scaled(camPos, 1.0).Moved(win.Bounds().Center().Sub(camPos))
-		win.SetMatrix(cam)
-		win.Clear(colornames.Whitesmoke)
-
-		batch.Clear()
-		updateParticles(particleSystem.particles, batch, dt, cam)
-
-		batch.Draw(win)
-
-		for timeElapsed > timeForOneParticle {
-			pos := particleSystem.position
-			angle := (rand.Float64() - 0.5) * (particleSystem.angle * (math.Pi / 180))
-			speed := pixel.V(0, startSpeed).Rotated(angle)
-			nextPost := pos.Add(speed.Scaled(PixelsPerMeter).Scaled(prevDt)).Add(Gravity.Scaled(PixelsPerMeter).Scaled(prevDt * prevDt * 0.5))
-			// fmt.Printf("pos: %f %f	prev: %f %f\n", pos.X, pos.Y, prevPos.X, prevPos.Y)
-			particle := Particle{
-				position:     pos,
-				nextPosition: nextPost,
-				speed:        speed,
-				prevDt:       prevDt,
-				sprite:       *particleSprite,
-				lifespan:     100.0,
-				alive:        0.0,
-			}
-			particleSystem.particles = append(particleSystem.particles, particle)
-			timeElapsed = timeElapsed - timeForOneParticle
-		}
-
 		win.Update()
+
+		if !gui.GetState().paused && !gui.GetState().stopped {
+			dt := time.Since(last).Seconds()
+			last = time.Now()
+			timeElapsed += dt
+
+			batch.Clear()
+			updateParticles(particleSystem.particles, batch, dt, cam)
+
+			win.Clear(colornames.Whitesmoke)
+			gui.batch.Draw(win)
+			batch.Draw(win)
+
+			for timeElapsed > timeForOneParticle {
+				pos := particleSystem.position
+				angle := (rand.Float64() - 0.5) * (particleSystem.angle * (math.Pi / 180))
+				speed := pixel.V(0, startSpeed).Rotated(angle)
+				nextPost := pos.Add(speed.Scaled(PixelsPerMeter).Scaled(prevDt)).Add(
+					Gravity.Scaled(PixelsPerMeter).Scaled(prevDt * prevDt * 0.5))
+				// fmt.Printf("pos: %f %f	prev: %f %f\n", pos.X, pos.Y, prevPos.X, prevPos.Y)
+				particle := Particle{
+					position:     pos,
+					nextPosition: nextPost,
+					speed:        speed,
+					prevDt:       prevDt,
+					sprite:       *particleSprite,
+					lifespan:     100.0,
+					alive:        0.0,
+				}
+				particleSystem.particles = append(particleSystem.particles, particle)
+				timeElapsed = timeElapsed - timeForOneParticle
+			}
+		} else if gui.GetState().paused && !gui.GetState().stopped {
+			last = time.Now()
+		} else {
+			last = time.Now()
+			timeElapsed = 0
+			particleSystem.particles = particleSystem.particles[:0]
+			batch.Clear()
+			win.Clear(colornames.Whitesmoke)
+			gui.batch.Draw(gui.win)
+		}
 
 		frames++
 		select {

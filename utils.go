@@ -8,7 +8,12 @@ import (
 	"github.com/faiface/pixel"
 )
 
-func loadPicture(data []byte) (pixel.Picture, error) {
+func loadPicture(imagePath string) (pixel.Picture, error) {
+	data, err := Asset(imagePath)
+	if err != nil {
+		return nil, err
+	}
+
 	buf := new(bytes.Buffer)
 	buf.Write(data)
 	img, _, err := image.Decode(buf)
