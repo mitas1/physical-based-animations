@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 )
@@ -52,6 +54,7 @@ func (gui *GUI) MainLoop() {
 		for !gui.win.Closed() {
 			if gui.win.JustPressed(pixelgl.MouseButtonLeft) {
 				gui.handleClick(gui.win.MousePosition().X, gui.win.MousePosition().Y)
+				time.Sleep(time.Millisecond * 100)
 			}
 		}
 	}()
