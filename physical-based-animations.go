@@ -134,6 +134,8 @@ func run() {
 	gui.MainLoop()
 	gui.Draw()
 
+	fps := time.Tick(time.Second / 200)
+
 	for !win.Closed() {
 		win.Update()
 
@@ -155,7 +157,7 @@ func run() {
 				speed := pixel.V(0, startSpeed).Rotated(angle)
 				nextPost := pos.Add(speed.Scaled(PixelsPerMeter).Scaled(prevDt)).Add(
 					Gravity.Scaled(PixelsPerMeter).Scaled(prevDt * prevDt * 0.5))
-				// fmt.Printf("pos: %f %f	prev: %f %f\n", pos.X, pos.Y, prevPos.X, prevPos.Y)
+
 				particle := Particle{
 					position:     pos,
 					nextPosition: nextPost,
@@ -192,6 +194,7 @@ func run() {
 			frames = 0
 		default:
 		}
+		<-fps
 	}
 }
 
