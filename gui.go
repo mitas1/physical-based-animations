@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/faiface/pixel/text"
+	"golang.org/x/image/colornames"
 )
 
 // Button represents a gui button element
@@ -16,10 +19,27 @@ type Button struct {
 	sprite       *pixel.Sprite
 }
 
+// Text represents parameters required to construct a struct object in gui
+type Text struct {
+	position pixel.Vec
+	text     *Parameter
+	widget   *text.Text
+	suffix   string
+}
+
+// SliderWannabe represents abstract of slider that changes a given parameter
+type SliderWannabe struct {
+	y         float64
+	parameter *Parameter
+	suffix    string
+}
+
 // GUI represents an attributes of gui
 type GUI struct {
+	atlas       *text.Atlas
 	win         *pixelgl.Window
 	widgets     []Button
+	texts       []Text
 	state       *HandledOptions
 	matrix      pixel.Matrix
 	batch       *pixel.Batch
@@ -92,6 +112,43 @@ func (gui *GUI) NewButton(button Button) {
 	gui.widgets = append(gui.widgets, button)
 }
 
+// NewText adds new text to the gui
+func (gui *GUI) NewText(t Text) {
+	gui.texts = append(gui.texts, t)
+}
+
+// NewSliderWannabe creates a slider which consists of two buttons and a text
+func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
+	plusButton := Button{
+		position:     pixel.V(10, slider.y),
+		croppingArea: pixel.R(80, 160, 160, 240),
+		bounds:       pixel.R(0, 0, 80, 80),
+		onClick:      slider.parameter.handlePlus,
+	}
+
+	gui.NewButton(plusButton)
+
+	minusButton := Button{
+		position:     pixel.V(190, slider.y),
+		croppingArea: pixel.R(80, 80, 160, 160),
+		bounds:       pixel.R(0, 0, 80, 80),
+		onClick:      slider.parameter.handleMinus,
+	}
+
+	gui.NewButton(minusButton)
+
+	txt := text.New(pixel.V(0, 0), gui.atlas)
+	txt.Color = colornames.Black
+	textWidget := Text{
+		position: pixel.V(100, slider.y+45),
+		text:     slider.parameter,
+		widget:   txt,
+		suffix:   "par/sec",
+	}
+
+	gui.NewText(textWidget)
+}
+
 // Draw draws a gui to gui batch
 func (gui *GUI) Draw() {
 	for _, widget := range gui.widgets {
@@ -99,4 +156,19 @@ func (gui *GUI) Draw() {
 		x1, y1 := widget.bounds.Center().XY()
 		widget.sprite.Draw(gui.batch, gui.matrix.Moved(pixel.V(x0, -y0).Sub(pixel.V(-x1, y1))))
 	}
+}
+
+// DrawText draws text widgets to gui text batch
+func (gui *GUI) DrawText(target pixel.Target) {
+	for _, t := range gui.texts {
+		x0, y0 := t.position.XY()
+
+		t.widget.Clear()
+		t.widget.Dot = t.widget.Orig
+
+		t.widget.WriteString(fmt.Sprintf("%d %s\n", int(t.text.value), t.suffix))
+
+		t.widget.Draw(gui.win, gui.matrix.Moved(pixel.V(x0, -y0)))
+	}
+
 }
