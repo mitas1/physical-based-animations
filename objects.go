@@ -49,10 +49,18 @@ func (particleSystem *ParticleSystem) KillOldParticles(minX float64, maxX float6
 	particleSystem.particles = append([]Particle{}, aliveParticles...)
 }
 
+// Parameter represents parameter that controlls various parameters used by ParticleSystem
+type Parameter struct {
+	value float64
+	step  float64
+	min   float64
+	max   float64
+}
+
 // ParticleSystem represents system of particles with and rate of particle generation per second
 type ParticleSystem struct {
 	position  pixel.Vec // in pixels
-	pps       int
+	emitRate  *Parameter
 	angle     float64 // in degrees
 	particles []Particle
 }

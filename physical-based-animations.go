@@ -7,7 +7,10 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/faiface/pixel/text"
+
 	"golang.org/x/image/colornames"
+	"golang.org/x/image/font/basicfont"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
@@ -81,19 +84,26 @@ func run() {
 		startSpeed  = 9.905
 	)
 
+	emitRate := Parameter{
+		value: 1000,
+		step:  100,
+		min:   0,
+		max:   2200,
+	}
+
 	particleSystem := ParticleSystem{
 		position: win.Bounds().Center().Sub(pixel.V(0.0, win.Bounds().H()/4.0)),
-		pps:      1000,
+		emitRate: &emitRate,
 		angle:    60.0,
 	}
 
-	timeForOneParticle := 1.0 / float64(particleSystem.pps)
 	prevDt := 0.002
 
 	last := time.Now()
 
 	gui := GUI{
-		win: win,
+		win:   win,
+		atlas: text.NewAtlas(basicfont.Face7x13, text.ASCII),
 	}
 
 	gui.CreateBatch("assets/sprites/spritesheet.png")
@@ -125,6 +135,14 @@ func run() {
 
 	gui.NewButton(stopButton)
 
+	emitRateSlider := SliderWannabe{
+		y:         280,
+		parameter: &emitRate,
+		suffix:    "par/sec",
+	}
+
+	gui.NewSliderWannabe(emitRateSlider)
+
 	cam := pixel.IM.Scaled(camPos, 1.0).Moved(win.Bounds().Center().Sub(camPos))
 
 	win.SetMatrix(cam)
@@ -133,6 +151,8 @@ func run() {
 	gui.BindState(&state)
 	gui.MainLoop()
 	gui.Draw()
+
+	fps := time.Tick(time.Second / 200)
 
 	for !win.Closed() {
 		win.Update()
@@ -146,8 +166,12 @@ func run() {
 			updateParticles(particleSystem.particles, batch, dt, cam)
 
 			win.Clear(colornames.Whitesmoke)
+
 			gui.batch.Draw(win)
 			batch.Draw(win)
+			gui.DrawText(win)
+
+			timeForOneParticle := 1.0 / float64(particleSystem.emitRate.value)
 
 			for timeElapsed > timeForOneParticle {
 				pos := particleSystem.position
@@ -155,7 +179,7 @@ func run() {
 				speed := pixel.V(0, startSpeed).Rotated(angle)
 				nextPost := pos.Add(speed.Scaled(PixelsPerMeter).Scaled(prevDt)).Add(
 					Gravity.Scaled(PixelsPerMeter).Scaled(prevDt * prevDt * 0.5))
-				// fmt.Printf("pos: %f %f	prev: %f %f\n", pos.X, pos.Y, prevPos.X, prevPos.Y)
+
 				particle := Particle{
 					position:     pos,
 					nextPosition: nextPost,
@@ -192,6 +216,7 @@ func run() {
 			frames = 0
 		default:
 		}
+		<-fps
 	}
 }
 
