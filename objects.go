@@ -61,6 +61,6 @@ type Parameter struct {
 type ParticleSystem struct {
 	position  pixel.Vec // in pixels
 	emitRate  *Parameter
-	angle     float64 // in degrees
+	angle     *Parameter // in degrees
 	particles []Particle
 }

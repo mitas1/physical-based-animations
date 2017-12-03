@@ -143,7 +143,7 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 		position: pixel.V(100, slider.y+45),
 		text:     slider.parameter,
 		widget:   txt,
-		suffix:   "par/sec",
+		suffix:   slider.suffix,
 	}
 
 	gui.NewText(textWidget)
