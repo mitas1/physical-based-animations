@@ -24,14 +24,14 @@ type Text struct {
 	position pixel.Vec
 	text     *Parameter
 	widget   *text.Text
-	suffix   string
+	format   string
 }
 
 // SliderWannabe represents abstract of slider that changes a given parameter
 type SliderWannabe struct {
 	y         float64
 	parameter *Parameter
-	suffix    string
+	format    string
 }
 
 // GUI represents an attributes of gui
@@ -143,7 +143,7 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 		position: pixel.V(100, slider.y+45),
 		text:     slider.parameter,
 		widget:   txt,
-		suffix:   slider.suffix,
+		format:   slider.format,
 	}
 
 	gui.NewText(textWidget)
@@ -166,7 +166,7 @@ func (gui *GUI) DrawText(target pixel.Target) {
 		t.widget.Clear()
 		t.widget.Dot = t.widget.Orig
 
-		t.widget.WriteString(fmt.Sprintf("%d %s\n", int(t.text.value), t.suffix))
+		t.widget.WriteString(fmt.Sprintf(t.format, float64(t.text.value)))
 
 		t.widget.Draw(gui.win, gui.matrix.Moved(pixel.V(x0, -y0)))
 	}

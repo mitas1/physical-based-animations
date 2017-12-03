@@ -98,6 +98,13 @@ func run() {
 		max:   360,
 	}
 
+	particleLife := Parameter{
+		value: 2,
+		step:  0.5,
+		min:   0,
+		max:   5,
+	}
+
 	particleSystem := ParticleSystem{
 		position: win.Bounds().Center().Sub(pixel.V(0.0, win.Bounds().H()/4.0)),
 		emitRate: &emitRate,
@@ -145,7 +152,7 @@ func run() {
 	emitRateSlider := SliderWannabe{
 		y:         280,
 		parameter: &emitRate,
-		suffix:    "par/sec",
+		format:    "%.0f par/sec\n",
 	}
 
 	gui.NewSliderWannabe(emitRateSlider)
@@ -153,10 +160,18 @@ func run() {
 	emitAngleSlider := SliderWannabe{
 		y:         370,
 		parameter: &emitAngle,
-		suffix:    "degrees",
+		format:    "%.0f degrees\n",
 	}
 
 	gui.NewSliderWannabe(emitAngleSlider)
+
+	particleLifeSlider := SliderWannabe{
+		y:         460,
+		parameter: &particleLife,
+		format:    "lives %.1f s\n",
+	}
+
+	gui.NewSliderWannabe(particleLifeSlider)
 
 	cam := pixel.IM.Scaled(camPos, 1.0).Moved(win.Bounds().Center().Sub(camPos))
 
@@ -201,7 +216,7 @@ func run() {
 					speed:        speed,
 					prevDt:       prevDt,
 					sprite:       *particleSprite,
-					lifespan:     100.0,
+					lifespan:     particleLife.value,
 					alive:        0.0,
 				}
 				particleSystem.particles = append(particleSystem.particles, particle)
@@ -217,15 +232,15 @@ func run() {
 			win.Clear(colornames.Whitesmoke)
 			gui.batch.Draw(gui.win)
 		}
+		particleSystem.KillOldParticles(
+			win.Bounds().Min.X,
+			win.Bounds().Max.X,
+			win.Bounds().Min.Y,
+		)
 
 		frames++
 		select {
 		case <-second:
-			particleSystem.KillOldParticles(
-				win.Bounds().Min.X,
-				win.Bounds().Max.X,
-				win.Bounds().Min.Y,
-			)
 			win.SetTitle(fmt.Sprintf("%s | FPS: %d | particles %d", cfg.Title, frames,
 				len(particleSystem.particles)))
 			frames = 0
