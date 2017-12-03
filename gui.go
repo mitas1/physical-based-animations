@@ -119,23 +119,23 @@ func (gui *GUI) NewText(t Text) {
 
 // NewSliderWannabe creates a slider which consists of two buttons and a text
 func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
-	plusButton := Button{
-		position:     pixel.V(10, slider.y),
-		croppingArea: pixel.R(80, 160, 160, 240),
-		bounds:       pixel.R(0, 0, 80, 80),
-		onClick:      slider.parameter.handlePlus,
-	}
-
-	gui.NewButton(plusButton)
-
 	minusButton := Button{
-		position:     pixel.V(190, slider.y),
+		position:     pixel.V(10, slider.y),
 		croppingArea: pixel.R(80, 80, 160, 160),
 		bounds:       pixel.R(0, 0, 80, 80),
 		onClick:      slider.parameter.handleMinus,
 	}
 
 	gui.NewButton(minusButton)
+
+	plusButton := Button{
+		position:     pixel.V(190, slider.y),
+		croppingArea: pixel.R(80, 160, 160, 240),
+		bounds:       pixel.R(0, 0, 80, 80),
+		onClick:      slider.parameter.handlePlus,
+	}
+
+	gui.NewButton(plusButton)
 
 	txt := text.New(pixel.V(0, 0), gui.atlas)
 	txt.Color = colornames.Black
