@@ -91,10 +91,17 @@ func run() {
 		max:   2200,
 	}
 
+	emitAngle := Parameter{
+		value: 60,
+		step:  5,
+		min:   10,
+		max:   360,
+	}
+
 	particleSystem := ParticleSystem{
 		position: win.Bounds().Center().Sub(pixel.V(0.0, win.Bounds().H()/4.0)),
 		emitRate: &emitRate,
-		angle:    60.0,
+		angle:    &emitAngle,
 	}
 
 	prevDt := 0.002
@@ -143,6 +150,14 @@ func run() {
 
 	gui.NewSliderWannabe(emitRateSlider)
 
+	emitAngleSlider := SliderWannabe{
+		y:         370,
+		parameter: &emitAngle,
+		suffix:    "degrees",
+	}
+
+	gui.NewSliderWannabe(emitAngleSlider)
+
 	cam := pixel.IM.Scaled(camPos, 1.0).Moved(win.Bounds().Center().Sub(camPos))
 
 	win.SetMatrix(cam)
@@ -175,7 +190,7 @@ func run() {
 
 			for timeElapsed > timeForOneParticle {
 				pos := particleSystem.position
-				angle := (rand.Float64() - 0.5) * (particleSystem.angle * (math.Pi / 180))
+				angle := (rand.Float64() - 0.5) * (particleSystem.angle.value * (math.Pi / 180))
 				speed := pixel.V(0, startSpeed).Rotated(angle)
 				nextPost := pos.Add(speed.Scaled(PixelsPerMeter).Scaled(prevDt)).Add(
 					Gravity.Scaled(PixelsPerMeter).Scaled(prevDt * prevDt * 0.5))
