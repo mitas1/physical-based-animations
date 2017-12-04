@@ -81,7 +81,6 @@ func run() {
 		second      = time.Tick(time.Second)
 		frames      = 0
 		timeElapsed = 0.0
-		startSpeed  = 9.905
 	)
 
 	emitRate := Parameter{
@@ -103,6 +102,13 @@ func run() {
 		step:  0.1,
 		min:   0.1,
 		max:   4,
+	}
+
+	initialVelocity := Parameter{
+		value: 9.5,
+		step:  0.5,
+		min:   -2,
+		max:   20,
 	}
 
 	particleSystem := ParticleSystem{
@@ -173,6 +179,14 @@ func run() {
 
 	gui.NewSliderWannabe(particleLifeSlider)
 
+	initialVelocitySlider := SliderWannabe{
+		y:         550,
+		parameter: &initialVelocity,
+		format:    "%.1f m/s",
+	}
+
+	gui.NewSliderWannabe(initialVelocitySlider)
+
 	cam := pixel.IM.Scaled(camPos, 1.0).Moved(win.Bounds().Center().Sub(camPos))
 
 	win.SetMatrix(cam)
@@ -206,7 +220,7 @@ func run() {
 			for timeElapsed > timeForOneParticle {
 				pos := particleSystem.position
 				angle := (rand.Float64() - 0.5) * (particleSystem.angle.value * (math.Pi / 180))
-				speed := pixel.V(0, startSpeed).Rotated(angle)
+				speed := pixel.V(0, initialVelocity.value).Rotated(angle)
 				nextPost := pos.Add(speed.Scaled(PixelsPerMeter).Scaled(prevDt)).Add(
 					Gravity.Scaled(PixelsPerMeter).Scaled(prevDt * prevDt * 0.5))
 
