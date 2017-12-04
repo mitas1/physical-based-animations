@@ -100,9 +100,9 @@ func run() {
 
 	particleLife := Parameter{
 		value: 2,
-		step:  0.5,
-		min:   0,
-		max:   5,
+		step:  0.1,
+		min:   0.1,
+		max:   4,
 	}
 
 	particleSystem := ParticleSystem{
