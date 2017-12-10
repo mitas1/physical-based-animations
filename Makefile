@@ -9,7 +9,7 @@ BUILD := `git rev-parse HEAD`
 
 LDFLAGS=-ldflags "-X=main.Version=$(VERSION) -X=main.Build=$(BUILD)"
 
-.PHONY: all install build clean goinstall uninstall check run
+.PHONY: all install build clean goinstall uninstall check run test
 
 all: check install goinstall
 
@@ -44,3 +44,6 @@ check:
 
 run: goinstall
 	@$(GOPATH)/bin/$(TARGET) &
+
+test:
+	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go test -v ./...
