@@ -49,7 +49,7 @@ $(DARWIN_TARGET): install $(BUILD_DIR)
 deps:
 	@go get -v github.com/tools/godep
 	@godep save
-	@rm -rf vendor/github.com/go-gl/glfw
+	@-rm -rf vendor/github.com/go-gl/glfw
 	@git clone https://github.com/go-gl/glfw.git vendor/github.com/go-gl/glfw
 	@ls -d ${CURRENT_DIR}/vendor/github.com/go-gl/glfw/** | grep -P "^.+[^(v3.2)]$$" | xargs -d"\n" rm -rf
 	@rm -f vendor/github.com/go-gl/glfw/.travis.yml
@@ -71,7 +71,7 @@ goinstall: install
 	@go install $(LDFLAGS)
 
 uninstall: clean
-	@rm -f $$(which ${TARGET})
+	@rm $$(which ${TARGET})
 
 run: goinstall
 	@${TARGET} &
