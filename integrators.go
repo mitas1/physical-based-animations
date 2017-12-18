@@ -12,6 +12,18 @@ func (p *Particle) ExplicitEulerIntegrator(dt float64) pixel.Vec {
 	return p.position.Add(p.speed.Scaled(dt).Scaled(PixelsPerMeter))
 }
 
+// ExplicitMidpointIntegrator calculates new position of a particle based on it's previous position
+// and it's speed
+func (p *Particle) ExplicitMidpointIntegrator(dt float64) pixel.Vec {
+	// v_{t+(1/2)} = v_{t} + (h/2)*(F/m) | v_{t+(1/2)} = v_{t} + (h/2)*g
+	p.speed = p.speed.Add(Gravity.Scaled(dt / 2))
+	// p_{t+(1/2)} = p_{t} + (h/2)*v(t)
+	position := p.position.Add(p.speed.Scaled(dt / 2).Scaled(PixelsPerMeter))
+
+	p.speed = p.speed.Add(Gravity.Scaled(dt / 2))
+	return position.Add(p.speed.Scaled(dt / 2).Scaled(PixelsPerMeter))
+}
+
 // VerletIntegrator calculates new position of a particle based on Verlet Integration Scheme
 func (p *Particle) VerletIntegrator(dt float64) pixel.Vec {
 	// While calculating next position using Verlet Integration scheme with changing time-step (Δt)

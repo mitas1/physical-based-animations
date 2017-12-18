@@ -23,7 +23,7 @@ const (
 
 func updateParticles(particles []Particle, batch *pixel.Batch, dt float64, cam pixel.Matrix) {
 	for i := 0; i < len(particles); i++ {
-		newPos, err := newPosition(&particles[i], dt, Verlet)
+		newPos, err := newPosition(&particles[i], dt, MidPoint)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -39,7 +39,7 @@ func newPosition(particle *Particle, dt float64, mode PositionIntegrationMethod)
 	case ExplicitEuler:
 		return particle.ExplicitEulerIntegrator(dt), nil
 	case MidPoint:
-		return particle.position, errors.New("Unimplemented")
+		return particle.ExplicitMidpointIntegrator(dt), nil
 	case Verlet:
 		return particle.VerletIntegrator(dt), nil
 	default:
