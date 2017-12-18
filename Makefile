@@ -76,4 +76,7 @@ uninstall: clean
 run: goinstall
 	@${TARGET} &
 
+test:
+	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go test -v ./...
+
 .PHONY: all install build clean goinstall uninstall run
