@@ -1,0 +1,68 @@
+{
+	"ImportPath": "github.com/mitas1/physical-based-animations",
+	"GoVersion": "go1.9",
+	"GodepVersion": "v79",
+	"Deps": [
+		{
+			"ImportPath": "github.com/faiface/glhf",
+			"Rev": "98c0391c0fd3f0b365cfe5d467ac162b79dfb002"
+		},
+		{
+			"ImportPath": "github.com/faiface/mainthread",
+			"Rev": "7127dc8993886d1ce799086ff298ff99bf258fbf"
+		},
+		{
+			"ImportPath": "github.com/faiface/pixel",
+			"Comment": "v0.6-109-g5612def",
+			"Rev": "5612defeba279c2f80b6680641e1cae12c4548f9"
+		},
+		{
+			"ImportPath": "github.com/faiface/pixel/pixelgl",
+			"Comment": "v0.6-109-g5612def",
+			"Rev": "5612defeba279c2f80b6680641e1cae12c4548f9"
+		},
+		{
+			"ImportPath": "github.com/faiface/pixel/text",
+			"Comment": "v0.6-109-g5612def",
+			"Rev": "5612defeba279c2f80b6680641e1cae12c4548f9"
+		},
+		{
+			"ImportPath": "github.com/go-gl/gl/v3.3-core/gl",
+			"Rev": "ac0d3d2af0fe995e2bb09fa6619b716b0c0fc0fa"
+		},
+		{
+			"ImportPath": "github.com/go-gl/glfw/v3.2/glfw",
+			"Rev": "513e4f2bf85c31fba0fc4907abd7895242ccbe50"
+		},
+		{
+			"ImportPath": "github.com/go-gl/mathgl/mgl32",
+			"Comment": "Go1.2.2-119-g4c3fc6b",
+			"Rev": "4c3fc6b4bf30179013667e5d0b926e024d9a13c1"
+		},
+		{
+			"ImportPath": "github.com/pkg/errors",
+			"Comment": "v0.8.0-7-gf15c970",
+			"Rev": "f15c970de5b76fac0b59abb32d62c17cc7bed265"
+		},
+		{
+			"ImportPath": "golang.org/x/image/colornames",
+			"Rev": "f7e31b4ea2e3413ab91b4e7d2dc83e5f8d19a44c"
+		},
+		{
+			"ImportPath": "golang.org/x/image/font",
+			"Rev": "f7e31b4ea2e3413ab91b4e7d2dc83e5f8d19a44c"
+		},
+		{
+			"ImportPath": "golang.org/x/image/font/basicfont",
+			"Rev": "f7e31b4ea2e3413ab91b4e7d2dc83e5f8d19a44c"
+		},
+		{
+			"ImportPath": "golang.org/x/image/math/f32",
+			"Rev": "f7e31b4ea2e3413ab91b4e7d2dc83e5f8d19a44c"
+		},
+		{
+			"ImportPath": "golang.org/x/image/math/fixed",
+			"Rev": "f7e31b4ea2e3413ab91b4e7d2dc83e5f8d19a44c"
+		}
+	]
+}
