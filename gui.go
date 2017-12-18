@@ -72,9 +72,9 @@ func (gui *GUI) BindState(state *HandledOptions) {
 func (gui *GUI) MainLoop() {
 	go func() {
 		for !gui.win.Closed() {
-			if gui.win.JustPressed(pixelgl.MouseButtonLeft) {
+			if gui.win.Pressed(pixelgl.MouseButtonLeft) {
 				gui.handleClick(gui.win.MousePosition().X, gui.win.MousePosition().Y)
-				time.Sleep(time.Millisecond * 100)
+				time.Sleep(time.Millisecond * 200)
 			}
 		}
 	}()
