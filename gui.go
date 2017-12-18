@@ -121,8 +121,8 @@ func (gui *GUI) NewText(t Text) {
 func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 	minusButton := Button{
 		position:     pixel.V(10, slider.y),
-		croppingArea: pixel.R(80, 80, 160, 160),
-		bounds:       pixel.R(0, 0, 80, 80),
+		croppingArea: pixel.R(60, 240, 120, 300),
+		bounds:       pixel.R(0, 0, 60, 60),
 		onClick:      slider.parameter.handleMinus,
 	}
 
@@ -130,8 +130,8 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 
 	plusButton := Button{
 		position:     pixel.V(190, slider.y),
-		croppingArea: pixel.R(80, 160, 160, 240),
-		bounds:       pixel.R(0, 0, 80, 80),
+		croppingArea: pixel.R(0, 240, 60, 300),
+		bounds:       pixel.R(0, 0, 60, 60),
 		onClick:      slider.parameter.handlePlus,
 	}
 

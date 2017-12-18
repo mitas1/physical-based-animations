@@ -130,26 +130,26 @@ func run() {
 
 	playButton := Button{
 		position:     pixel.V(10, 10),
-		croppingArea: pixel.R(0, 160, 80, 240),
-		bounds:       pixel.R(0, 0, 80, 80),
+		croppingArea: pixel.R(0, 300, 60, 360),
+		bounds:       pixel.R(0, 0, 60, 60),
 		onClick:      handlePlayClick,
 	}
 
 	gui.NewButton(playButton)
 
 	pauseButton := Button{
-		position:     pixel.V(10, 100),
-		croppingArea: pixel.R(0, 80, 80, 160),
-		bounds:       pixel.R(0, 0, 80, 80),
+		position:     pixel.V(80, 10),
+		croppingArea: pixel.R(60, 300, 120, 360),
+		bounds:       pixel.R(0, 0, 60, 60),
 		onClick:      handlePauseClick,
 	}
 
 	gui.NewButton(pauseButton)
 
 	stopButton := Button{
-		position:     pixel.V(10, 190),
-		croppingArea: pixel.R(0, 0, 80, 80),
-		bounds:       pixel.R(0, 0, 80, 80),
+		position:     pixel.V(160, 10),
+		croppingArea: pixel.R(120, 300, 180, 360),
+		bounds:       pixel.R(0, 0, 60, 60),
 		onClick:      handleStopClick,
 	}
 
