@@ -1,0 +1,11 @@
+language: go
+
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install libgl1-mesa-dev xorg-dev
+
+install:
+  - make
+
+script:
+  - make test

@@ -28,7 +28,7 @@ LDFLAGS=-ldflags '-X main.VERSION=${VERSION} -X main.COMMIT=${COMMIT} -X main.BR
 all: install goinstall
 
 $(BINDATA):
-	@go get -v github.com/jteeuwen/go-bindata
+	@go get -v github.com/jteeuwen/go-bindata/...
 	@go-bindata assets/...
 
 install: $(BINDATA)
@@ -77,6 +77,6 @@ run: goinstall
 	@${TARGET} &
 
 test:
-	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go test -v ./...
+	go test -v ./...
 
 .PHONY: all install build clean goinstall uninstall run
