@@ -122,8 +122,9 @@ func run() {
 	last := time.Now()
 
 	gui := GUI{
-		win:   win,
-		atlas: text.NewAtlas(basicfont.Face7x13, text.ASCII),
+		win:    win,
+		atlas:  text.NewAtlas(basicfont.Face7x13, text.ASCII),
+		canvas: pixelgl.NewCanvas(pixel.R(0, 0, 260, win.Bounds().Max.Y)),
 	}
 
 	gui.CreateBatch("assets/sprites/spritesheet.png")
@@ -198,6 +199,8 @@ func run() {
 
 	fps := time.Tick(time.Second / 200)
 
+	gui.canvas.Clear(colornames.White)
+
 	for !win.Closed() {
 		win.Update()
 
@@ -211,9 +214,13 @@ func run() {
 
 			win.Clear(colornames.Whitesmoke)
 
+			gui.canvas.Draw(
+				win,
+				pixel.IM.Moved(pixel.V((win.Bounds().W()/-2.0)+(gui.canvas.Bounds().W()/2.0), 0.0)),
+			)
 			gui.batch.Draw(win)
-			batch.Draw(win)
 			gui.DrawText(win)
+			batch.Draw(win)
 
 			timeForOneParticle := 1.0 / float64(particleSystem.emitRate.value)
 

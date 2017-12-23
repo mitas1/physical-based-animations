@@ -44,6 +44,7 @@ type GUI struct {
 	matrix      pixel.Matrix
 	batch       *pixel.Batch
 	spritesheet pixel.Picture
+	canvas      *pixelgl.Canvas
 }
 
 // HandledOptions define options which may be controlled by gui elements
