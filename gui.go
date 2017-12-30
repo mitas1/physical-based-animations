@@ -29,9 +29,10 @@ type Text struct {
 
 // SliderWannabe represents abstract of slider that changes a given parameter
 type SliderWannabe struct {
-	y         float64
-	parameter *Parameter
-	format    string
+	y           float64
+	canvasWidth float64
+	parameter   *Parameter
+	format      string
 }
 
 // GUI represents an attributes of gui
@@ -130,7 +131,7 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 	gui.NewButton(minusButton)
 
 	plusButton := Button{
-		position:     pixel.V(190, slider.y),
+		position:     pixel.V(slider.canvasWidth-60-10, slider.y),
 		croppingArea: pixel.R(0, 240, 60, 300),
 		bounds:       pixel.R(0, 0, 60, 60),
 		onClick:      slider.parameter.handlePlus,
@@ -141,7 +142,7 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 	txt := text.New(pixel.V(0, 0), gui.atlas)
 	txt.Color = colornames.Black
 	textWidget := Text{
-		position: pixel.V(100, slider.y+45),
+		position: pixel.V((slider.canvasWidth-60)/2, slider.y+35),
 		text:     slider.parameter,
 		widget:   txt,
 		format:   slider.format,

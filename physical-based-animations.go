@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	winWidth  = 1024
-	winHeight = 768
+	winWidth  = 1920
+	winHeight = 1080
 )
 
 func updateParticles(particles []Particle, batch *pixel.Batch, dt float64, cam pixel.Matrix) {
@@ -121,69 +121,78 @@ func run() {
 
 	last := time.Now()
 
+	guiCanvasWidth := 320.0
+	timeControlButtonWidth := 60.0
+
 	gui := GUI{
 		win:    win,
 		atlas:  text.NewAtlas(basicfont.Face7x13, text.ASCII),
-		canvas: pixelgl.NewCanvas(pixel.R(0, 0, 260, win.Bounds().Max.Y)),
+		canvas: pixelgl.NewCanvas(pixel.R(0, 0, guiCanvasWidth, win.Bounds().Max.Y)),
 	}
 
 	gui.CreateBatch("assets/sprites/spritesheet.png")
 
+	spaceBetweenButtons := (guiCanvasWidth - (3 * timeControlButtonWidth)) / 4
+
 	playButton := Button{
-		position:     pixel.V(10, 10),
+		position:     pixel.V(spaceBetweenButtons, 10),
 		croppingArea: pixel.R(0, 300, 60, 360),
-		bounds:       pixel.R(0, 0, 60, 60),
+		bounds:       pixel.R(0, 0, timeControlButtonWidth, timeControlButtonWidth),
 		onClick:      handlePlayClick,
 	}
 
 	gui.NewButton(playButton)
 
 	pauseButton := Button{
-		position:     pixel.V(80, 10),
+		position:     pixel.V(spaceBetweenButtons*2+timeControlButtonWidth, 10),
 		croppingArea: pixel.R(60, 300, 120, 360),
-		bounds:       pixel.R(0, 0, 60, 60),
+		bounds:       pixel.R(0, 0, timeControlButtonWidth, timeControlButtonWidth),
 		onClick:      handlePauseClick,
 	}
 
 	gui.NewButton(pauseButton)
 
 	stopButton := Button{
-		position:     pixel.V(160, 10),
+		position:     pixel.V(spaceBetweenButtons*3+timeControlButtonWidth*2, 10),
 		croppingArea: pixel.R(120, 300, 180, 360),
-		bounds:       pixel.R(0, 0, 60, 60),
+		bounds:       pixel.R(0, 0, timeControlButtonWidth, timeControlButtonWidth),
 		onClick:      handleStopClick,
 	}
 
 	gui.NewButton(stopButton)
 
 	emitRateSlider := SliderWannabe{
-		y:         280,
-		parameter: &emitRate,
-		format:    "%.0f par/sec\n",
+		y:           280,
+		canvasWidth: guiCanvasWidth,
+		parameter:   &emitRate,
+		format:      "%.0f par/sec\n",
 	}
 
 	gui.NewSliderWannabe(emitRateSlider)
 
 	emitAngleSlider := SliderWannabe{
-		y:         370,
-		parameter: &emitAngle,
-		format:    "%.0f degrees\n",
+		y:           370,
+		canvasWidth: guiCanvasWidth,
+		parameter:   &emitAngle,
+		format:      "%.0f degrees\n",
 	}
 
 	gui.NewSliderWannabe(emitAngleSlider)
 
 	particleLifeSlider := SliderWannabe{
-		y:         460,
-		parameter: &particleLife,
-		format:    "lives %.1f s\n",
+		y:           460,
+		canvasWidth: guiCanvasWidth,
+		parameter:   &particleLife,
+		format:      "lives %.1f s\n",
 	}
 
 	gui.NewSliderWannabe(particleLifeSlider)
 
 	initialVelocitySlider := SliderWannabe{
-		y:         550,
-		parameter: &initialVelocity,
-		format:    "%.1f m/s",
+		y:           550,
+		canvasWidth: guiCanvasWidth,
+		parameter:   &initialVelocity,
+		format:      "%.1f m/s",
 	}
 
 	gui.NewSliderWannabe(initialVelocitySlider)
@@ -251,6 +260,10 @@ func run() {
 			particleSystem.particles = particleSystem.particles[:0]
 			batch.Clear()
 			win.Clear(colornames.Whitesmoke)
+			gui.canvas.Draw(
+				win,
+				pixel.IM.Moved(pixel.V((win.Bounds().W()/-2.0)+(gui.canvas.Bounds().W()/2.0), 0.0)),
+			)
 			gui.batch.Draw(gui.win)
 		}
 		particleSystem.KillOldParticles(
