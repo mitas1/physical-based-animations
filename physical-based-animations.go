@@ -21,9 +21,14 @@ const (
 	winHeight = 1080
 )
 
-func updateParticles(particles []Particle, batch *pixel.Batch, dt float64, cam pixel.Matrix) {
+func updateParticles(
+	particles []Particle,
+	batch *pixel.Batch,
+	dt float64,
+	cam pixel.Matrix,
+	positionIntegrator PositionIntegrationMethod) {
 	for i := 0; i < len(particles); i++ {
-		newPos, err := newPosition(&particles[i], dt, MidPoint)
+		newPos, err := newPosition(&particles[i], dt, positionIntegrator)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -162,7 +167,7 @@ func run() {
 	gui.NewButton(stopButton)
 
 	emitRateSlider := SliderWannabe{
-		y:           280,
+		y:           360,
 		canvasWidth: guiCanvasWidth,
 		parameter:   &emitRate,
 		format:      "%.0f par/sec\n",
@@ -171,7 +176,7 @@ func run() {
 	gui.NewSliderWannabe(emitRateSlider)
 
 	emitAngleSlider := SliderWannabe{
-		y:           370,
+		y:           450,
 		canvasWidth: guiCanvasWidth,
 		parameter:   &emitAngle,
 		format:      "%.0f degrees\n",
@@ -180,7 +185,7 @@ func run() {
 	gui.NewSliderWannabe(emitAngleSlider)
 
 	particleLifeSlider := SliderWannabe{
-		y:           460,
+		y:           540,
 		canvasWidth: guiCanvasWidth,
 		parameter:   &particleLife,
 		format:      "lives %.1f s\n",
@@ -189,13 +194,21 @@ func run() {
 	gui.NewSliderWannabe(particleLifeSlider)
 
 	initialVelocitySlider := SliderWannabe{
-		y:           550,
+		y:           630,
 		canvasWidth: guiCanvasWidth,
 		parameter:   &initialVelocity,
 		format:      "%.1f m/s",
 	}
 
 	gui.NewSliderWannabe(initialVelocitySlider)
+
+	positionIntegratorSwitch := SwitchWannabe{
+		y:                  100,
+		canvasWidth:        guiCanvasWidth,
+		positionIntegrator: ExplicitEuler,
+	}
+
+	gui.NewSwitchWannabe(&positionIntegratorSwitch)
 
 	cam := pixel.IM.Scaled(camPos, 1.0).Moved(win.Bounds().Center().Sub(camPos))
 
@@ -219,7 +232,13 @@ func run() {
 			timeElapsed += dt
 
 			batch.Clear()
-			updateParticles(particleSystem.particles, batch, dt, cam)
+			updateParticles(
+				particleSystem.particles,
+				batch,
+				dt,
+				cam,
+				positionIntegratorSwitch.positionIntegrator,
+			)
 
 			win.Clear(colornames.Whitesmoke)
 

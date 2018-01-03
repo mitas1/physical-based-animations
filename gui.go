@@ -35,6 +35,14 @@ type SliderWannabe struct {
 	format      string
 }
 
+// SwitchWannabe represents abstract of switch that can switch between various position integrator
+// methods
+type SwitchWannabe struct {
+	y                  float64
+	canvasWidth        float64
+	positionIntegrator PositionIntegrationMethod
+}
+
 // GUI represents an attributes of gui
 type GUI struct {
 	atlas       *text.Atlas
@@ -149,6 +157,36 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 	}
 
 	gui.NewText(textWidget)
+}
+
+// NewSwitchWannabe creates a switch that consists of three buttons
+func (gui *GUI) NewSwitchWannabe(sw *SwitchWannabe) {
+	explictEulerButton := Button{
+		position:     pixel.V((sw.canvasWidth-255)/2, sw.y),
+		croppingArea: pixel.R(0, 160, 255, 240),
+		bounds:       pixel.R(0, 0, 255, 80),
+		onClick:      sw.handleExplicitEuler,
+	}
+
+	gui.NewButton(explictEulerButton)
+
+	midpointButton := Button{
+		position:     pixel.V((sw.canvasWidth-300)/2, sw.y+80),
+		croppingArea: pixel.R(0, 80, 300, 160),
+		bounds:       pixel.R(0, 0, 300, 80),
+		onClick:      sw.handleMidpoint,
+	}
+
+	gui.NewButton(midpointButton)
+
+	verletButton := Button{
+		position:     pixel.V((sw.canvasWidth-140)/2, sw.y+160),
+		croppingArea: pixel.R(0, 0, 140, 80),
+		bounds:       pixel.R(0, 0, 140, 80),
+		onClick:      sw.handleVerlet,
+	}
+
+	gui.NewButton(verletButton)
 }
 
 // Draw draws a gui to gui batch

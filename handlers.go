@@ -29,3 +29,15 @@ func (param *Parameter) handleMinus(state *HandledOptions) {
 		param.value -= param.step
 	}
 }
+
+func (sw *SwitchWannabe) handleExplicitEuler(state *HandledOptions) {
+	sw.positionIntegrator = ExplicitEuler
+}
+
+func (sw *SwitchWannabe) handleMidpoint(state *HandledOptions) {
+	sw.positionIntegrator = MidPoint
+}
+
+func (sw *SwitchWannabe) handleVerlet(state *HandledOptions) {
+	sw.positionIntegrator = Verlet
+}
