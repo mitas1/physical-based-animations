@@ -132,7 +132,7 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 	// minusButton is placed 10 pixels from the left of the rendering canvas
 	minusButton := Button{
 		position:     pixel.V(10, slider.y),
-		croppingArea: pixel.R(60, 240, 120, 300),
+		croppingArea: pixel.R(60, 360, 120, 420),
 		bounds:       pixel.R(0, 0, 60, 60),
 		onClick:      slider.parameter.handleMinus,
 	}
@@ -143,7 +143,7 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 	// 60 pixels account for the width of the button itself
 	plusButton := Button{
 		position:     pixel.V(slider.canvasWidth-60-10, slider.y),
-		croppingArea: pixel.R(0, 240, 60, 300),
+		croppingArea: pixel.R(0, 360, 60, 420),
 		bounds:       pixel.R(0, 0, 60, 60),
 		onClick:      slider.parameter.handlePlus,
 	}

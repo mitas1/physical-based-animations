@@ -129,6 +129,7 @@ func run() {
 	last := time.Now()
 
 	const timeControlButtonWidth = 60.0
+	const timeControlButtonY = 420
 
 	gui := GUI{
 		win:    win,
@@ -141,28 +142,31 @@ func run() {
 	spaceBetweenButtons := (guiCanvasWidth - (3 * timeControlButtonWidth)) / 4
 
 	playButton := Button{
-		position:     pixel.V(spaceBetweenButtons, 10),
-		croppingArea: pixel.R(0, 300, 60, 360),
-		bounds:       pixel.R(0, 0, timeControlButtonWidth, timeControlButtonWidth),
-		onClick:      handlePlayClick,
+		position: pixel.V(spaceBetweenButtons, 10),
+		croppingArea: pixel.R(0, timeControlButtonY, 60,
+			timeControlButtonY+timeControlButtonWidth),
+		bounds:  pixel.R(0, 0, timeControlButtonWidth, timeControlButtonWidth),
+		onClick: handlePlayClick,
 	}
 
 	gui.NewButton(playButton)
 
 	pauseButton := Button{
-		position:     pixel.V(spaceBetweenButtons*2+timeControlButtonWidth, 10),
-		croppingArea: pixel.R(60, 300, 120, 360),
-		bounds:       pixel.R(0, 0, timeControlButtonWidth, timeControlButtonWidth),
-		onClick:      handlePauseClick,
+		position: pixel.V(spaceBetweenButtons*2+timeControlButtonWidth, 10),
+		croppingArea: pixel.R(60, timeControlButtonY, 120,
+			timeControlButtonY+timeControlButtonWidth),
+		bounds:  pixel.R(0, 0, timeControlButtonWidth, timeControlButtonWidth),
+		onClick: handlePauseClick,
 	}
 
 	gui.NewButton(pauseButton)
 
 	stopButton := Button{
-		position:     pixel.V(spaceBetweenButtons*3+timeControlButtonWidth*2, 10),
-		croppingArea: pixel.R(120, 300, 180, 360),
-		bounds:       pixel.R(0, 0, timeControlButtonWidth, timeControlButtonWidth),
-		onClick:      handleStopClick,
+		position: pixel.V(spaceBetweenButtons*3+timeControlButtonWidth*2, 10),
+		croppingArea: pixel.R(120, timeControlButtonY, 180,
+			timeControlButtonY+timeControlButtonWidth),
+		bounds:  pixel.R(0, 0, timeControlButtonWidth, timeControlButtonWidth),
+		onClick: handleStopClick,
 	}
 
 	gui.NewButton(stopButton)
