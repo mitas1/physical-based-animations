@@ -12,11 +12,12 @@ import (
 
 // Button represents a gui button element
 type Button struct {
-	position     pixel.Vec
-	bounds       pixel.Rect
-	croppingArea pixel.Rect
-	onClick      func(options *HandledOptions)
-	sprite       *pixel.Sprite
+	position           pixel.Vec
+	bounds             pixel.Rect
+	croppingArea       pixel.Rect
+	croppingAreaActive pixel.Rect
+	onClick            func(options *HandledOptions)
+	sprite             *pixel.Sprite
 }
 
 // Text represents parameters required to construct a struct object in gui
@@ -167,28 +168,31 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 // NewSwitchWannabe creates a switch that consists of three buttons
 func (gui *GUI) NewSwitchWannabe(sw *SwitchWannabe) {
 	explictEulerButton := Button{
-		position:     pixel.V((sw.canvasWidth-255)/2, sw.y),
-		croppingArea: pixel.R(0, 160, 255, 240),
-		bounds:       pixel.R(0, 0, 255, 80),
-		onClick:      sw.handleExplicitEuler,
+		position:           pixel.V((sw.canvasWidth-230)/2, sw.y),
+		croppingArea:       pixel.R(0, 240, 230, 300),
+		croppingAreaActive: pixel.R(0, 300, 230, 360),
+		bounds:             pixel.R(0, 0, 230, 60),
+		onClick:            sw.handleExplicitEuler,
 	}
 
 	gui.NewButton(explictEulerButton)
 
 	midpointButton := Button{
-		position:     pixel.V((sw.canvasWidth-300)/2, sw.y+80),
-		croppingArea: pixel.R(0, 80, 300, 160),
-		bounds:       pixel.R(0, 0, 300, 80),
-		onClick:      sw.handleMidpoint,
+		position:           pixel.V((sw.canvasWidth-267)/2, sw.y+80),
+		croppingArea:       pixel.R(0, 120, 267, 180),
+		croppingAreaActive: pixel.R(0, 180, 267, 240),
+		bounds:             pixel.R(0, 0, 267, 60),
+		onClick:            sw.handleMidpoint,
 	}
 
 	gui.NewButton(midpointButton)
 
 	verletButton := Button{
-		position:     pixel.V((sw.canvasWidth-140)/2, sw.y+160),
-		croppingArea: pixel.R(0, 0, 140, 80),
-		bounds:       pixel.R(0, 0, 140, 80),
-		onClick:      sw.handleVerlet,
+		position:           pixel.V((sw.canvasWidth-125)/2, sw.y+160),
+		croppingArea:       pixel.R(0, 0, 125, 60),
+		croppingAreaActive: pixel.R(0, 60, 125, 120),
+		bounds:             pixel.R(0, 0, 125, 60),
+		onClick:            sw.handleVerlet,
 	}
 
 	gui.NewButton(verletButton)
