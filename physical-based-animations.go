@@ -128,7 +128,7 @@ func run() {
 
 	last := time.Now()
 
-	timeControlButtonWidth := 60.0
+	const timeControlButtonWidth = 60.0
 
 	gui := GUI{
 		win:    win,

@@ -30,7 +30,7 @@ type Text struct {
 // SliderWannabe represents abstract of slider that changes a given parameter
 type SliderWannabe struct {
 	y           float64
-	canvasWidth float64
+	canvasWidth float64 // width of the canvas SliderWannabe is rendered do so the internal objects can be properly spaced
 	parameter   *Parameter
 	format      string
 }
@@ -39,7 +39,7 @@ type SliderWannabe struct {
 // methods
 type SwitchWannabe struct {
 	y                  float64
-	canvasWidth        float64
+	canvasWidth        float64 // width of the canvas SwitchWannabe is redered to so the internal objects can be properly spaced
 	positionIntegrator PositionIntegrationMethod
 }
 
@@ -129,6 +129,7 @@ func (gui *GUI) NewText(t Text) {
 
 // NewSliderWannabe creates a slider which consists of two buttons and a text
 func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
+	// minusButton is placed 10 pixels from the left of the rendering canvas
 	minusButton := Button{
 		position:     pixel.V(10, slider.y),
 		croppingArea: pixel.R(60, 240, 120, 300),
@@ -138,6 +139,8 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 
 	gui.NewButton(minusButton)
 
+	// plusButton is placed 10 pixels from the right of the rendering canvas
+	// 60 pixels account for the width of the button itself
 	plusButton := Button{
 		position:     pixel.V(slider.canvasWidth-60-10, slider.y),
 		croppingArea: pixel.R(0, 240, 60, 300),
@@ -149,6 +152,8 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 
 	txt := text.New(pixel.V(0, 0), gui.atlas)
 	txt.Color = colornames.Black
+	// textWidget is placed roughly to the midle of the two buttons
+	// this is not the exact middle but looks fitting
 	textWidget := Text{
 		position: pixel.V((slider.canvasWidth-60)/2, slider.y+35),
 		text:     slider.parameter,
