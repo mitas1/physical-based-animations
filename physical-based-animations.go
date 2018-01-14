@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	winWidth  = 1920
-	winHeight = 1080
+	winWidth  = 1024
+	winHeight = 768
 )
 
 func updateParticles(
@@ -116,8 +116,10 @@ func run() {
 		max:   20,
 	}
 
+	guiCanvasWidth := 320.0
+
 	particleSystem := ParticleSystem{
-		position: win.Bounds().Center().Sub(pixel.V(0.0, win.Bounds().H()/4.0)),
+		position: pixel.V((win.Bounds().W()+win.Bounds().Min.X+guiCanvasWidth)/2, win.Bounds().H()/4.0),
 		emitRate: &emitRate,
 		angle:    &emitAngle,
 	}
@@ -126,7 +128,6 @@ func run() {
 
 	last := time.Now()
 
-	guiCanvasWidth := 320.0
 	timeControlButtonWidth := 60.0
 
 	gui := GUI{
