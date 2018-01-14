@@ -21,9 +21,14 @@ const (
 	winHeight = 768
 )
 
-func updateParticles(particles []Particle, batch *pixel.Batch, dt float64, cam pixel.Matrix) {
+func updateParticles(
+	particles []Particle,
+	batch *pixel.Batch,
+	dt float64,
+	cam pixel.Matrix,
+	positionIntegrator PositionIntegrationMethod) {
 	for i := 0; i < len(particles); i++ {
-		newPos, err := newPosition(&particles[i], dt, MidPoint)
+		newPos, err := newPosition(&particles[i], dt, positionIntegrator)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -111,8 +116,10 @@ func run() {
 		max:   20,
 	}
 
+	guiCanvasWidth := 320.0
+
 	particleSystem := ParticleSystem{
-		position: win.Bounds().Center().Sub(pixel.V(0.0, win.Bounds().H()/4.0)),
+		position: pixel.V((win.Bounds().W()+win.Bounds().Min.X+guiCanvasWidth)/2, win.Bounds().H()/4.0),
 		emitRate: &emitRate,
 		angle:    &emitAngle,
 	}
@@ -121,72 +128,92 @@ func run() {
 
 	last := time.Now()
 
+	const timeControlButtonWidth = 60.0
+	const timeControlButtonY = 420
+
 	gui := GUI{
 		win:    win,
 		atlas:  text.NewAtlas(basicfont.Face7x13, text.ASCII),
-		canvas: pixelgl.NewCanvas(pixel.R(0, 0, 260, win.Bounds().Max.Y)),
+		canvas: pixelgl.NewCanvas(pixel.R(0, 0, guiCanvasWidth, win.Bounds().Max.Y)),
 	}
 
 	gui.CreateBatch("assets/sprites/spritesheet.png")
 
-	playButton := Button{
-		position:     pixel.V(10, 10),
-		croppingArea: pixel.R(0, 300, 60, 360),
-		bounds:       pixel.R(0, 0, 60, 60),
-		onClick:      handlePlayClick,
+	spaceBetweenButtons := (guiCanvasWidth - (3 * timeControlButtonWidth)) / 4
+
+	playButton := &Button{
+		position: pixel.V(spaceBetweenButtons, 10),
+		croppingArea: pixel.R(0, timeControlButtonY, 60,
+			timeControlButtonY+timeControlButtonWidth),
+		bounds:  pixel.R(0, 0, timeControlButtonWidth, timeControlButtonWidth),
+		onClick: handlePlayClick,
 	}
 
 	gui.NewButton(playButton)
 
-	pauseButton := Button{
-		position:     pixel.V(80, 10),
-		croppingArea: pixel.R(60, 300, 120, 360),
-		bounds:       pixel.R(0, 0, 60, 60),
-		onClick:      handlePauseClick,
+	pauseButton := &Button{
+		position: pixel.V(spaceBetweenButtons*2+timeControlButtonWidth, 10),
+		croppingArea: pixel.R(60, timeControlButtonY, 120,
+			timeControlButtonY+timeControlButtonWidth),
+		bounds:  pixel.R(0, 0, timeControlButtonWidth, timeControlButtonWidth),
+		onClick: handlePauseClick,
 	}
 
 	gui.NewButton(pauseButton)
 
-	stopButton := Button{
-		position:     pixel.V(160, 10),
-		croppingArea: pixel.R(120, 300, 180, 360),
-		bounds:       pixel.R(0, 0, 60, 60),
-		onClick:      handleStopClick,
+	stopButton := &Button{
+		position: pixel.V(spaceBetweenButtons*3+timeControlButtonWidth*2, 10),
+		croppingArea: pixel.R(120, timeControlButtonY, 180,
+			timeControlButtonY+timeControlButtonWidth),
+		bounds:  pixel.R(0, 0, timeControlButtonWidth, timeControlButtonWidth),
+		onClick: handleStopClick,
 	}
 
 	gui.NewButton(stopButton)
 
 	emitRateSlider := SliderWannabe{
-		y:         280,
-		parameter: &emitRate,
-		format:    "%.0f par/sec\n",
+		y:           360,
+		canvasWidth: guiCanvasWidth,
+		parameter:   &emitRate,
+		format:      "%.0f par/sec\n",
 	}
 
 	gui.NewSliderWannabe(emitRateSlider)
 
 	emitAngleSlider := SliderWannabe{
-		y:         370,
-		parameter: &emitAngle,
-		format:    "%.0f degrees\n",
+		y:           450,
+		canvasWidth: guiCanvasWidth,
+		parameter:   &emitAngle,
+		format:      "%.0f degrees\n",
 	}
 
 	gui.NewSliderWannabe(emitAngleSlider)
 
 	particleLifeSlider := SliderWannabe{
-		y:         460,
-		parameter: &particleLife,
-		format:    "lives %.1f s\n",
+		y:           540,
+		canvasWidth: guiCanvasWidth,
+		parameter:   &particleLife,
+		format:      "lives %.1f s\n",
 	}
 
 	gui.NewSliderWannabe(particleLifeSlider)
 
 	initialVelocitySlider := SliderWannabe{
-		y:         550,
-		parameter: &initialVelocity,
-		format:    "%.1f m/s",
+		y:           630,
+		canvasWidth: guiCanvasWidth,
+		parameter:   &initialVelocity,
+		format:      "%.1f m/s",
 	}
 
 	gui.NewSliderWannabe(initialVelocitySlider)
+
+	positionIntegratorSwitch := SwitchWannabe{
+		y:           100,
+		canvasWidth: guiCanvasWidth,
+	}
+
+	gui.NewSwitchWannabe(&positionIntegratorSwitch)
+	positionIntegratorSwitch.handleExplicitEuler(nil)
 
 	cam := pixel.IM.Scaled(camPos, 1.0).Moved(win.Bounds().Center().Sub(camPos))
 
@@ -195,7 +222,6 @@ func run() {
 	gui.SetMatrix(cam)
 	gui.BindState(&state)
 	gui.MainLoop()
-	gui.Draw()
 
 	fps := time.Tick(time.Second / 200)
 
@@ -203,6 +229,7 @@ func run() {
 
 	for !win.Closed() {
 		win.Update()
+		gui.Draw()
 
 		if !gui.GetState().paused && !gui.GetState().stopped {
 			dt := time.Since(last).Seconds()
@@ -210,17 +237,23 @@ func run() {
 			timeElapsed += dt
 
 			batch.Clear()
-			updateParticles(particleSystem.particles, batch, dt, cam)
+			updateParticles(
+				particleSystem.particles,
+				batch,
+				dt,
+				cam,
+				positionIntegratorSwitch.positionIntegrator,
+			)
 
 			win.Clear(colornames.Whitesmoke)
 
+			batch.Draw(win)
 			gui.canvas.Draw(
 				win,
 				pixel.IM.Moved(pixel.V((win.Bounds().W()/-2.0)+(gui.canvas.Bounds().W()/2.0), 0.0)),
 			)
 			gui.batch.Draw(win)
 			gui.DrawText(win)
-			batch.Draw(win)
 
 			timeForOneParticle := 1.0 / float64(particleSystem.emitRate.value)
 
@@ -245,12 +278,17 @@ func run() {
 			}
 		} else if gui.GetState().paused && !gui.GetState().stopped {
 			last = time.Now()
+			gui.batch.Draw(gui.win)
 		} else {
 			last = time.Now()
 			timeElapsed = 0
 			particleSystem.particles = particleSystem.particles[:0]
 			batch.Clear()
 			win.Clear(colornames.Whitesmoke)
+			gui.canvas.Draw(
+				win,
+				pixel.IM.Moved(pixel.V((win.Bounds().W()/-2.0)+(gui.canvas.Bounds().W()/2.0), 0.0)),
+			)
 			gui.batch.Draw(gui.win)
 		}
 		particleSystem.KillOldParticles(

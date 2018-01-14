@@ -12,11 +12,14 @@ import (
 
 // Button represents a gui button element
 type Button struct {
-	position     pixel.Vec
-	bounds       pixel.Rect
-	croppingArea pixel.Rect
-	onClick      func(options *HandledOptions)
-	sprite       *pixel.Sprite
+	position           pixel.Vec
+	bounds             pixel.Rect
+	croppingArea       pixel.Rect
+	croppingAreaActive pixel.Rect
+	onClick            func(options *HandledOptions)
+	sprite             *pixel.Sprite
+	spriteActive       *pixel.Sprite
+	isActive           bool
 }
 
 // Text represents parameters required to construct a struct object in gui
@@ -29,16 +32,26 @@ type Text struct {
 
 // SliderWannabe represents abstract of slider that changes a given parameter
 type SliderWannabe struct {
-	y         float64
-	parameter *Parameter
-	format    string
+	y           float64
+	canvasWidth float64 // width of the canvas SliderWannabe is rendered do so the internal objects can be properly spaced
+	parameter   *Parameter
+	format      string
+}
+
+// SwitchWannabe represents abstract of switch that can switch between various position integrator
+// methods
+type SwitchWannabe struct {
+	y                  float64
+	canvasWidth        float64 // width of the canvas SwitchWannabe is redered to so the internal objects can be properly spaced
+	positionIntegrator PositionIntegrationMethod
+	buttons            []*Button
 }
 
 // GUI represents an attributes of gui
 type GUI struct {
 	atlas       *text.Atlas
 	win         *pixelgl.Window
-	widgets     []Button
+	widgets     []*Button
 	texts       []Text
 	state       *HandledOptions
 	matrix      pixel.Matrix
@@ -107,8 +120,9 @@ func (gui *GUI) SetMatrix(matrix pixel.Matrix) {
 }
 
 // NewButton creates a new button element
-func (gui *GUI) NewButton(button Button) {
+func (gui *GUI) NewButton(button *Button) {
 	button.sprite = pixel.NewSprite(gui.spritesheet, button.croppingArea)
+	button.spriteActive = pixel.NewSprite(gui.spritesheet, button.croppingAreaActive)
 
 	gui.widgets = append(gui.widgets, button)
 }
@@ -120,28 +134,33 @@ func (gui *GUI) NewText(t Text) {
 
 // NewSliderWannabe creates a slider which consists of two buttons and a text
 func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
+	// minusButton is placed 10 pixels from the left of the rendering canvas
 	minusButton := Button{
 		position:     pixel.V(10, slider.y),
-		croppingArea: pixel.R(60, 240, 120, 300),
+		croppingArea: pixel.R(60, 360, 120, 420),
 		bounds:       pixel.R(0, 0, 60, 60),
 		onClick:      slider.parameter.handleMinus,
 	}
 
-	gui.NewButton(minusButton)
+	gui.NewButton(&minusButton)
 
+	// plusButton is placed 10 pixels from the right of the rendering canvas
+	// 60 pixels account for the width of the button itself
 	plusButton := Button{
-		position:     pixel.V(190, slider.y),
-		croppingArea: pixel.R(0, 240, 60, 300),
+		position:     pixel.V(slider.canvasWidth-60-10, slider.y),
+		croppingArea: pixel.R(0, 360, 60, 420),
 		bounds:       pixel.R(0, 0, 60, 60),
 		onClick:      slider.parameter.handlePlus,
 	}
 
-	gui.NewButton(plusButton)
+	gui.NewButton(&plusButton)
 
 	txt := text.New(pixel.V(0, 0), gui.atlas)
 	txt.Color = colornames.Black
+	// textWidget is placed roughly to the midle of the two buttons
+	// this is not the exact middle but looks fitting
 	textWidget := Text{
-		position: pixel.V(100, slider.y+45),
+		position: pixel.V((slider.canvasWidth-60)/2, slider.y+35),
 		text:     slider.parameter,
 		widget:   txt,
 		format:   slider.format,
@@ -150,12 +169,48 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 	gui.NewText(textWidget)
 }
 
+// NewSwitchWannabe creates a switch that consists of three buttons
+func (gui *GUI) NewSwitchWannabe(sw *SwitchWannabe) {
+	sw.buttons = append(sw.buttons, &Button{
+		position:           pixel.V((sw.canvasWidth-230)/2, sw.y),
+		croppingArea:       pixel.R(0, 240, 230, 300),
+		croppingAreaActive: pixel.R(0, 300, 230, 360),
+		bounds:             pixel.R(0, 0, 230, 60),
+		onClick:            sw.handleExplicitEuler,
+	})
+
+	sw.buttons = append(sw.buttons, &Button{
+		position:           pixel.V((sw.canvasWidth-267)/2, sw.y+80),
+		croppingArea:       pixel.R(0, 120, 267, 180),
+		croppingAreaActive: pixel.R(0, 180, 267, 240),
+		bounds:             pixel.R(0, 0, 267, 60),
+		onClick:            sw.handleMidpoint,
+	})
+
+	sw.buttons = append(sw.buttons, &Button{
+		position:           pixel.V((sw.canvasWidth-125)/2, sw.y+160),
+		croppingArea:       pixel.R(0, 0, 125, 60),
+		croppingAreaActive: pixel.R(0, 60, 125, 120),
+		bounds:             pixel.R(0, 0, 125, 60),
+		onClick:            sw.handleVerlet,
+	})
+
+	for _, button := range sw.buttons {
+		gui.NewButton(button)
+	}
+}
+
 // Draw draws a gui to gui batch
 func (gui *GUI) Draw() {
+	gui.batch.Clear()
 	for _, widget := range gui.widgets {
 		x0, y0 := widget.position.XY()
 		x1, y1 := widget.bounds.Center().XY()
-		widget.sprite.Draw(gui.batch, gui.matrix.Moved(pixel.V(x0, -y0).Sub(pixel.V(-x1, y1))))
+		if widget.isActive {
+			widget.spriteActive.Draw(gui.batch, gui.matrix.Moved(pixel.V(x0, -y0).Sub(pixel.V(-x1, y1))))
+		} else {
+			widget.sprite.Draw(gui.batch, gui.matrix.Moved(pixel.V(x0, -y0).Sub(pixel.V(-x1, y1))))
+		}
 	}
 }
 
