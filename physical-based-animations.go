@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/text"
 
 	"golang.org/x/image/colornames"
@@ -26,14 +27,27 @@ func updateParticles(
 	batch *pixel.Batch,
 	dt float64,
 	cam pixel.Matrix,
-	positionIntegrator PositionIntegrationMethod) {
+	positionIntegrator PositionIntegrationMethod,
+	circle Circle) {
 	for i := 0; i < len(particles); i++ {
 		newPos, err := newPosition(&particles[i], dt, positionIntegrator)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
 
-		particles[i].position = newPos
+		if circle.collisionDetection(newPos) {
+			normalVector := particles[i].position.Sub(circle.position).Unit().Scaled(circle.radius)
+
+			speed := particles[i].speed.Unit()
+
+			particles[i].position = normalVector.Scaled(1.1).Add(circle.position)
+			particles[i].speed = particles[i].speed.Rotated(2 * (math.Atan2(speed.Y, speed.X) - math.Atan2(normalVector.Y, normalVector.X)))
+
+			particles[i].collide = true
+		} else {
+			particles[i].position = newPos
+		}
+
 		particles[i].alive += dt
 		particles[i].sprite.Draw(batch, pixel.IM.Moved(cam.Unproject(particles[i].position)))
 	}
@@ -122,6 +136,11 @@ func run() {
 		position: pixel.V((win.Bounds().W()+win.Bounds().Min.X+guiCanvasWidth)/2, win.Bounds().H()/4.0),
 		emitRate: &emitRate,
 		angle:    &emitAngle,
+	}
+
+	circle := Circle{
+		position: pixel.V(412, 400),
+		radius:   50,
 	}
 
 	prevDt := 0.002
@@ -227,6 +246,11 @@ func run() {
 
 	gui.canvas.Clear(colornames.White)
 
+	imd := imdraw.New(nil)
+	imd.Color = colornames.Red
+	imd.Push(pixel.V(0, 0).Sub(win.Bounds().Center()).Add(circle.position))
+	imd.Circle(circle.radius, 0)
+
 	for !win.Closed() {
 		win.Update()
 		gui.Draw()
@@ -237,17 +261,22 @@ func run() {
 			timeElapsed += dt
 
 			batch.Clear()
+
 			updateParticles(
 				particleSystem.particles,
 				batch,
 				dt,
 				cam,
 				positionIntegratorSwitch.positionIntegrator,
+				circle,
 			)
 
 			win.Clear(colornames.Whitesmoke)
 
 			batch.Draw(win)
+
+			imd.Draw(win)
+
 			gui.canvas.Draw(
 				win,
 				pixel.IM.Moved(pixel.V((win.Bounds().W()/-2.0)+(gui.canvas.Bounds().W()/2.0), 0.0)),
@@ -272,6 +301,7 @@ func run() {
 					sprite:       *particleSprite,
 					lifespan:     particleLife.value,
 					alive:        0.0,
+					collide:      false,
 				}
 				particleSystem.particles = append(particleSystem.particles, particle)
 				timeElapsed = timeElapsed - timeForOneParticle
