@@ -30,23 +30,24 @@ func (param *Parameter) handleMinus(state *HandledOptions) {
 	}
 }
 
+func (sw *SwitchWannabe) setActiveButton(index int) {
+	for _, button := range sw.buttons {
+		button.isActive = false
+	}
+	sw.buttons[index].isActive = true
+}
+
 func (sw *SwitchWannabe) handleExplicitEuler(state *HandledOptions) {
 	sw.positionIntegrator = ExplicitEuler
-	sw.explicitMidpointButton.isActive = false
-	sw.verletButton.isActive = false
-	sw.explicitEulerButton.isActive = true
+	sw.setActiveButton(0)
 }
 
 func (sw *SwitchWannabe) handleMidpoint(state *HandledOptions) {
 	sw.positionIntegrator = MidPoint
-	sw.verletButton.isActive = false
-	sw.explicitEulerButton.isActive = false
-	sw.explicitMidpointButton.isActive = true
+	sw.setActiveButton(1)
 }
 
 func (sw *SwitchWannabe) handleVerlet(state *HandledOptions) {
 	sw.positionIntegrator = Verlet
-	sw.explicitMidpointButton.isActive = false
-	sw.explicitEulerButton.isActive = false
-	sw.verletButton.isActive = true
+	sw.setActiveButton(2)
 }

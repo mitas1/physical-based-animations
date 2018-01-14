@@ -41,12 +41,10 @@ type SliderWannabe struct {
 // SwitchWannabe represents abstract of switch that can switch between various position integrator
 // methods
 type SwitchWannabe struct {
-	y                      float64
-	canvasWidth            float64 // width of the canvas SwitchWannabe is redered to so the internal objects can be properly spaced
-	positionIntegrator     PositionIntegrationMethod
-	explicitEulerButton    Button
-	explicitMidpointButton Button
-	verletButton           Button
+	y                  float64
+	canvasWidth        float64 // width of the canvas SwitchWannabe is redered to so the internal objects can be properly spaced
+	positionIntegrator PositionIntegrationMethod
+	buttons            []*Button
 }
 
 // GUI represents an attributes of gui
@@ -173,37 +171,33 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 
 // NewSwitchWannabe creates a switch that consists of three buttons
 func (gui *GUI) NewSwitchWannabe(sw *SwitchWannabe) {
-	sw.explicitEulerButton = Button{
+	sw.buttons = append(sw.buttons, &Button{
 		position:           pixel.V((sw.canvasWidth-230)/2, sw.y),
 		croppingArea:       pixel.R(0, 240, 230, 300),
 		croppingAreaActive: pixel.R(0, 300, 230, 360),
 		bounds:             pixel.R(0, 0, 230, 60),
 		onClick:            sw.handleExplicitEuler,
-		isActive:           false,
-	}
-	gui.NewButton(&sw.explicitEulerButton)
+	})
 
-	sw.explicitMidpointButton = Button{
+	sw.buttons = append(sw.buttons, &Button{
 		position:           pixel.V((sw.canvasWidth-267)/2, sw.y+80),
 		croppingArea:       pixel.R(0, 120, 267, 180),
 		croppingAreaActive: pixel.R(0, 180, 267, 240),
 		bounds:             pixel.R(0, 0, 267, 60),
 		onClick:            sw.handleMidpoint,
-		isActive:           false,
-	}
+	})
 
-	gui.NewButton(&sw.explicitMidpointButton)
-
-	sw.verletButton = Button{
+	sw.buttons = append(sw.buttons, &Button{
 		position:           pixel.V((sw.canvasWidth-125)/2, sw.y+160),
 		croppingArea:       pixel.R(0, 0, 125, 60),
 		croppingAreaActive: pixel.R(0, 60, 125, 120),
 		bounds:             pixel.R(0, 0, 125, 60),
 		onClick:            sw.handleVerlet,
-		isActive:           false,
-	}
+	})
 
-	gui.NewButton(&sw.verletButton)
+	for _, button := range sw.buttons {
+		gui.NewButton(button)
+	}
 }
 
 // Draw draws a gui to gui batch
