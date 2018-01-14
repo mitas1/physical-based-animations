@@ -243,13 +243,13 @@ func run() {
 
 			win.Clear(colornames.Whitesmoke)
 
+			batch.Draw(win)
 			gui.canvas.Draw(
 				win,
 				pixel.IM.Moved(pixel.V((win.Bounds().W()/-2.0)+(gui.canvas.Bounds().W()/2.0), 0.0)),
 			)
 			gui.batch.Draw(win)
 			gui.DrawText(win)
-			batch.Draw(win)
 
 			timeForOneParticle := 1.0 / float64(particleSystem.emitRate.value)
 
