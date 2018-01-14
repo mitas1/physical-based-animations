@@ -18,6 +18,8 @@ type Button struct {
 	croppingAreaActive pixel.Rect
 	onClick            func(options *HandledOptions)
 	sprite             *pixel.Sprite
+	spriteActive       *pixel.Sprite
+	isActive           bool
 }
 
 // Text represents parameters required to construct a struct object in gui
@@ -39,16 +41,19 @@ type SliderWannabe struct {
 // SwitchWannabe represents abstract of switch that can switch between various position integrator
 // methods
 type SwitchWannabe struct {
-	y                  float64
-	canvasWidth        float64 // width of the canvas SwitchWannabe is redered to so the internal objects can be properly spaced
-	positionIntegrator PositionIntegrationMethod
+	y                      float64
+	canvasWidth            float64 // width of the canvas SwitchWannabe is redered to so the internal objects can be properly spaced
+	positionIntegrator     PositionIntegrationMethod
+	explicitEulerButton    Button
+	explicitMidpointButton Button
+	verletButton           Button
 }
 
 // GUI represents an attributes of gui
 type GUI struct {
 	atlas       *text.Atlas
 	win         *pixelgl.Window
-	widgets     []Button
+	widgets     []*Button
 	texts       []Text
 	state       *HandledOptions
 	matrix      pixel.Matrix
@@ -117,8 +122,9 @@ func (gui *GUI) SetMatrix(matrix pixel.Matrix) {
 }
 
 // NewButton creates a new button element
-func (gui *GUI) NewButton(button Button) {
+func (gui *GUI) NewButton(button *Button) {
 	button.sprite = pixel.NewSprite(gui.spritesheet, button.croppingArea)
+	button.spriteActive = pixel.NewSprite(gui.spritesheet, button.croppingAreaActive)
 
 	gui.widgets = append(gui.widgets, button)
 }
@@ -138,7 +144,7 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 		onClick:      slider.parameter.handleMinus,
 	}
 
-	gui.NewButton(minusButton)
+	gui.NewButton(&minusButton)
 
 	// plusButton is placed 10 pixels from the right of the rendering canvas
 	// 60 pixels account for the width of the button itself
@@ -149,7 +155,7 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 		onClick:      slider.parameter.handlePlus,
 	}
 
-	gui.NewButton(plusButton)
+	gui.NewButton(&plusButton)
 
 	txt := text.New(pixel.V(0, 0), gui.atlas)
 	txt.Color = colornames.Black
@@ -167,43 +173,50 @@ func (gui *GUI) NewSliderWannabe(slider SliderWannabe) {
 
 // NewSwitchWannabe creates a switch that consists of three buttons
 func (gui *GUI) NewSwitchWannabe(sw *SwitchWannabe) {
-	explictEulerButton := Button{
+	sw.explicitEulerButton = Button{
 		position:           pixel.V((sw.canvasWidth-230)/2, sw.y),
 		croppingArea:       pixel.R(0, 240, 230, 300),
 		croppingAreaActive: pixel.R(0, 300, 230, 360),
 		bounds:             pixel.R(0, 0, 230, 60),
 		onClick:            sw.handleExplicitEuler,
+		isActive:           false,
 	}
+	gui.NewButton(&sw.explicitEulerButton)
 
-	gui.NewButton(explictEulerButton)
-
-	midpointButton := Button{
+	sw.explicitMidpointButton = Button{
 		position:           pixel.V((sw.canvasWidth-267)/2, sw.y+80),
 		croppingArea:       pixel.R(0, 120, 267, 180),
 		croppingAreaActive: pixel.R(0, 180, 267, 240),
 		bounds:             pixel.R(0, 0, 267, 60),
 		onClick:            sw.handleMidpoint,
+		isActive:           false,
 	}
 
-	gui.NewButton(midpointButton)
+	gui.NewButton(&sw.explicitMidpointButton)
 
-	verletButton := Button{
+	sw.verletButton = Button{
 		position:           pixel.V((sw.canvasWidth-125)/2, sw.y+160),
 		croppingArea:       pixel.R(0, 0, 125, 60),
 		croppingAreaActive: pixel.R(0, 60, 125, 120),
 		bounds:             pixel.R(0, 0, 125, 60),
 		onClick:            sw.handleVerlet,
+		isActive:           false,
 	}
 
-	gui.NewButton(verletButton)
+	gui.NewButton(&sw.verletButton)
 }
 
 // Draw draws a gui to gui batch
 func (gui *GUI) Draw() {
+	gui.batch.Clear()
 	for _, widget := range gui.widgets {
 		x0, y0 := widget.position.XY()
 		x1, y1 := widget.bounds.Center().XY()
-		widget.sprite.Draw(gui.batch, gui.matrix.Moved(pixel.V(x0, -y0).Sub(pixel.V(-x1, y1))))
+		if widget.isActive {
+			widget.spriteActive.Draw(gui.batch, gui.matrix.Moved(pixel.V(x0, -y0).Sub(pixel.V(-x1, y1))))
+		} else {
+			widget.sprite.Draw(gui.batch, gui.matrix.Moved(pixel.V(x0, -y0).Sub(pixel.V(-x1, y1))))
+		}
 	}
 }
 

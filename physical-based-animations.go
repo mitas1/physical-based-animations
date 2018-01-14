@@ -141,7 +141,7 @@ func run() {
 
 	spaceBetweenButtons := (guiCanvasWidth - (3 * timeControlButtonWidth)) / 4
 
-	playButton := Button{
+	playButton := &Button{
 		position: pixel.V(spaceBetweenButtons, 10),
 		croppingArea: pixel.R(0, timeControlButtonY, 60,
 			timeControlButtonY+timeControlButtonWidth),
@@ -151,7 +151,7 @@ func run() {
 
 	gui.NewButton(playButton)
 
-	pauseButton := Button{
+	pauseButton := &Button{
 		position: pixel.V(spaceBetweenButtons*2+timeControlButtonWidth, 10),
 		croppingArea: pixel.R(60, timeControlButtonY, 120,
 			timeControlButtonY+timeControlButtonWidth),
@@ -161,7 +161,7 @@ func run() {
 
 	gui.NewButton(pauseButton)
 
-	stopButton := Button{
+	stopButton := &Button{
 		position: pixel.V(spaceBetweenButtons*3+timeControlButtonWidth*2, 10),
 		croppingArea: pixel.R(120, timeControlButtonY, 180,
 			timeControlButtonY+timeControlButtonWidth),
@@ -208,12 +208,12 @@ func run() {
 	gui.NewSliderWannabe(initialVelocitySlider)
 
 	positionIntegratorSwitch := SwitchWannabe{
-		y:                  100,
-		canvasWidth:        guiCanvasWidth,
-		positionIntegrator: ExplicitEuler,
+		y:           100,
+		canvasWidth: guiCanvasWidth,
 	}
 
 	gui.NewSwitchWannabe(&positionIntegratorSwitch)
+	positionIntegratorSwitch.handleExplicitEuler(nil)
 
 	cam := pixel.IM.Scaled(camPos, 1.0).Moved(win.Bounds().Center().Sub(camPos))
 
@@ -222,7 +222,6 @@ func run() {
 	gui.SetMatrix(cam)
 	gui.BindState(&state)
 	gui.MainLoop()
-	gui.Draw()
 
 	fps := time.Tick(time.Second / 200)
 
@@ -230,6 +229,7 @@ func run() {
 
 	for !win.Closed() {
 		win.Update()
+		gui.Draw()
 
 		if !gui.GetState().paused && !gui.GetState().stopped {
 			dt := time.Since(last).Seconds()
@@ -278,6 +278,7 @@ func run() {
 			}
 		} else if gui.GetState().paused && !gui.GetState().stopped {
 			last = time.Now()
+			gui.batch.Draw(gui.win)
 		} else {
 			last = time.Now()
 			timeElapsed = 0
