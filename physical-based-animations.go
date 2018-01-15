@@ -36,7 +36,8 @@ func updateParticles(
 		}
 
 		if circle.isPositionInside(newPosition) {
-			unitNormalVector := particles[i].position.Sub(circle.position).Unit().Scaled(circle.radius)
+			unitNormalVector := particles[i].position.Sub(circle.position).Unit().Scaled(
+				circle.radius)
 			unitSpeed := particles[i].speed.Unit()
 
 			newPosition = unitNormalVector.Scaled(1.1).Add(circle.position)
@@ -134,7 +135,8 @@ func run() {
 	guiCanvasWidth := 320.0
 
 	particleSystem := ParticleSystem{
-		position: pixel.V((win.Bounds().W()+win.Bounds().Min.X+guiCanvasWidth)/2, win.Bounds().H()/4.0),
+		position: pixel.V((win.Bounds().W()+win.Bounds().Min.X+guiCanvasWidth)/2,
+			win.Bounds().H()/4.0),
 		emitRate: &emitRate,
 		angle:    &emitAngle,
 	}

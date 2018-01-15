@@ -6,7 +6,12 @@ import (
 	"github.com/faiface/pixel"
 )
 
-func createParticle(pos pixel.Vec, nextPos pixel.Vec, speed pixel.Vec, prevDT float64, lifespan float64) Particle {
+func createParticle(
+	pos pixel.Vec,
+	nextPos pixel.Vec,
+	speed pixel.Vec,
+	prevDT float64,
+	lifespan float64) Particle {
 	particleImage, err := loadPicture("assets/sprites/particle.png")
 	if err != nil {
 		panic(err)

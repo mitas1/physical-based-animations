@@ -207,7 +207,8 @@ func (gui *GUI) Draw() {
 		x0, y0 := widget.position.XY()
 		x1, y1 := widget.bounds.Center().XY()
 		if widget.isActive {
-			widget.spriteActive.Draw(gui.batch, gui.matrix.Moved(pixel.V(x0, -y0).Sub(pixel.V(-x1, y1))))
+			widget.spriteActive.Draw(gui.batch, gui.matrix.Moved(pixel.V(x0, -y0).Sub(
+				pixel.V(-x1, y1))))
 		} else {
 			widget.sprite.Draw(gui.batch, gui.matrix.Moved(pixel.V(x0, -y0).Sub(pixel.V(-x1, y1))))
 		}
