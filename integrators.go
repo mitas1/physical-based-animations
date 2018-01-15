@@ -36,5 +36,7 @@ func (p *Particle) VerletIntegrator(dt float64) pixel.Vec {
 	tmp := p.nextPosition
 	p.prevDt = dt
 	p.nextPosition = pNext
+	p.speed = p.speed.Add(Gravity.Add(Gravity).Scaled(0.5).Scaled(dt))
+
 	return tmp
 }
