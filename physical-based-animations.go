@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"image/color"
 	"math"
 	"math/rand"
 	"time"
@@ -250,9 +251,12 @@ func run() {
 	gui.canvas.Clear(colornames.White)
 
 	imd := imdraw.New(nil)
-	imd.Color = colornames.Red
+	imd.Color = color.RGBA{0, 0, 0, 30}
 	imd.Push(pixel.V(0, 0).Sub(win.Bounds().Center()).Add(circle.position))
 	imd.Circle(circle.radius, 0)
+	imd.Color = color.RGBA{0, 0, 0, 50}
+	imd.Push(pixel.V(0, 0).Sub(win.Bounds().Center()).Add(circle.position))
+	imd.Circle(circle.radius, 1)
 
 	for !win.Closed() {
 		win.Update()
