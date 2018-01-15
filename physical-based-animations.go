@@ -262,6 +262,19 @@ func run() {
 		win.Update()
 		gui.Draw()
 
+		if win.Pressed(pixelgl.MouseButtonLeft) {
+			if circle.isPositionInside(win.MousePosition()) {
+				circle.position = win.MousePosition()
+				imd.Clear()
+				imd.Color = color.RGBA{0, 0, 0, 30}
+				imd.Push(pixel.V(0, 0).Sub(win.Bounds().Center()).Add(circle.position))
+				imd.Circle(circle.radius, 0)
+				imd.Color = color.RGBA{0, 0, 0, 50}
+				imd.Push(pixel.V(0, 0).Sub(win.Bounds().Center()).Add(circle.position))
+				imd.Circle(circle.radius, 1)
+			}
+		}
+
 		if !gui.GetState().paused && !gui.GetState().stopped {
 			dt := time.Since(last).Seconds()
 			last = time.Now()
