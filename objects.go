@@ -32,7 +32,6 @@ type Particle struct {
 	sprite       pixel.Sprite // particle display image
 	lifespan     float64      // in s
 	alive        float64      // in s
-	collide      bool
 }
 
 // KillOldParticles removes all particles that live up to their lifespan or are outside the

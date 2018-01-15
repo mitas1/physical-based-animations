@@ -325,7 +325,6 @@ func run() {
 					sprite:       *particleSprite,
 					lifespan:     particleLife.value,
 					alive:        0.0,
-					collide:      false,
 				}
 				particleSystem.particles = append(particleSystem.particles, particle)
 				timeElapsed = timeElapsed - timeForOneParticle
