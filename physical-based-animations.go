@@ -37,14 +37,18 @@ func updateParticles(
 		}
 
 		if circle.isPositionInside(newPosition) {
+			const coefficientOfRestitution = 0.5
+
 			unitNormalVector := particles[i].position.Sub(circle.position).Unit().Scaled(
 				circle.radius)
 			unitSpeed := particles[i].speed.Unit()
 
 			newPosition = unitNormalVector.Scaled(1.1).Add(circle.position)
-			particles[i].speed = particles[i].speed.Rotated(2 *
+			newSpeed := particles[i].speed.Rotated(2 *
 				(math.Atan2(unitSpeed.Y, unitSpeed.X) -
 					math.Atan2(unitNormalVector.Y, unitNormalVector.X)))
+
+			particles[i].speed = newSpeed.Scaled(coefficientOfRestitution)
 		}
 
 		particles[i].position = newPosition
