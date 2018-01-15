@@ -38,7 +38,7 @@ func updateParticles(
 		if circle.isPositionInside(newPosition) {
 			const coefficientOfRestitution = 0.5
 
-			unitNormalVector := particles[i].position.Sub(circle.position).Unit().Scaled(
+			unitNormalVector := newPosition.Sub(circle.position).Unit().Scaled(
 				circle.radius)
 			unitSpeed := particles[i].speed.Unit()
 
@@ -48,6 +48,11 @@ func updateParticles(
 					math.Atan2(unitNormalVector.Y, unitNormalVector.X)))
 
 			particles[i].speed = newSpeed.Scaled(coefficientOfRestitution)
+
+			if positionIntegrator == Verlet {
+				particles[i].nextPosition = newPosition.Add(particles[i].speed.Scaled(PixelsPerMeter).Scaled(dt)).Add(
+					Gravity.Scaled(PixelsPerMeter).Scaled(dt * dt * 0.5))
+			}
 		}
 
 		particles[i].position = newPosition
@@ -249,7 +254,7 @@ func run() {
 	gui.BindState(&state)
 	gui.MainLoop()
 
-	fps := time.Tick(time.Second / 200)
+	fps := time.Tick(time.Second / 400)
 
 	gui.canvas.Clear(colornames.White)
 
