@@ -30,30 +30,31 @@ func updateParticles(
 	positionIntegrator PositionIntegrationMethod,
 	circle Circle) {
 	for i := 0; i < len(particles); i++ {
-		newPos, err := newPosition(&particles[i], dt, positionIntegrator)
+		newPosition, err := getNewPosition(&particles[i], dt, positionIntegrator)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
 
-		if circle.collisionDetection(newPos) {
-			normalVector := particles[i].position.Sub(circle.position).Unit().Scaled(circle.radius)
+		if circle.isPositionInside(newPosition) {
+			unitNormalVector := particles[i].position.Sub(circle.position).Unit().Scaled(circle.radius)
+			unitSpeed := particles[i].speed.Unit()
 
-			speed := particles[i].speed.Unit()
-
-			particles[i].position = normalVector.Scaled(1.1).Add(circle.position)
-			particles[i].speed = particles[i].speed.Rotated(2 * (math.Atan2(speed.Y, speed.X) - math.Atan2(normalVector.Y, normalVector.X)))
-
-			particles[i].collide = true
-		} else {
-			particles[i].position = newPos
+			newPosition = unitNormalVector.Scaled(1.1).Add(circle.position)
+			particles[i].speed = particles[i].speed.Rotated(2 *
+				(math.Atan2(unitSpeed.Y, unitSpeed.X) -
+					math.Atan2(unitNormalVector.Y, unitNormalVector.X)))
 		}
 
+		particles[i].position = newPosition
 		particles[i].alive += dt
 		particles[i].sprite.Draw(batch, pixel.IM.Moved(cam.Unproject(particles[i].position)))
 	}
 }
 
-func newPosition(particle *Particle, dt float64, mode PositionIntegrationMethod) (pixel.Vec, error) {
+func getNewPosition(
+	particle *Particle,
+	dt float64,
+	mode PositionIntegrationMethod) (pixel.Vec, error) {
 	switch mode {
 	case ExplicitEuler:
 		return particle.ExplicitEulerIntegrator(dt), nil

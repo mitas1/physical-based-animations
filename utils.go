@@ -24,6 +24,6 @@ func loadPicture(imagePath string) (pixel.Picture, error) {
 	return pixel.PictureDataFromImage(img), nil
 }
 
-func (circle *Circle) collisionDetection(position pixel.Vec) bool {
+func (circle *Circle) isPositionInside(position pixel.Vec) bool {
 	return circle.position.To(position).Len() <= circle.radius
 }
