@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"image/color"
 	"math"
 	"math/rand"
 	"time"
@@ -255,28 +254,16 @@ func run() {
 	gui.canvas.Clear(colornames.White)
 
 	imd := imdraw.New(nil)
-	imd.Color = color.RGBA{0, 0, 0, 30}
-	imd.Push(pixel.V(0, 0).Sub(win.Bounds().Center()).Add(circle.position))
-	imd.Circle(circle.radius, 0)
-	imd.Color = color.RGBA{0, 0, 0, 50}
-	imd.Push(pixel.V(0, 0).Sub(win.Bounds().Center()).Add(circle.position))
-	imd.Circle(circle.radius, 1)
+	circle.draw(imd, pixel.V(0, 0).Sub(win.Bounds().Center()).Add(circle.position))
 
 	for !win.Closed() {
 		win.Update()
 		gui.Draw()
 
-		if win.Pressed(pixelgl.MouseButtonLeft) {
-			if circle.isPositionInside(win.MousePosition()) {
-				circle.position = win.MousePosition()
-				imd.Clear()
-				imd.Color = color.RGBA{0, 0, 0, 30}
-				imd.Push(pixel.V(0, 0).Sub(win.Bounds().Center()).Add(circle.position))
-				imd.Circle(circle.radius, 0)
-				imd.Color = color.RGBA{0, 0, 0, 50}
-				imd.Push(pixel.V(0, 0).Sub(win.Bounds().Center()).Add(circle.position))
-				imd.Circle(circle.radius, 1)
-			}
+		if win.Pressed(pixelgl.MouseButtonLeft) && circle.isPositionInside(win.MousePosition()) {
+			circle.position = win.MousePosition()
+			imd.Clear()
+			circle.draw(imd, pixel.V(0, 0).Sub(win.Bounds().Center()).Add(circle.position))
 		}
 
 		if !gui.GetState().paused && !gui.GetState().stopped {

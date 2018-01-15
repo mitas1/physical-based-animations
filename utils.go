@@ -3,9 +3,11 @@ package main
 import (
 	"bytes"
 	"image"
+	"image/color"
 	_ "image/png"
 
 	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/imdraw"
 )
 
 func loadPicture(imagePath string) (pixel.Picture, error) {
@@ -35,4 +37,13 @@ func isInsideBoundingBox(x, y float64, box pixel.Rect, boxPosition pixel.Vec) bo
 
 func (circle *Circle) isPositionInside(position pixel.Vec) bool {
 	return circle.position.To(position).Len() <= circle.radius
+}
+
+func (circle *Circle) draw(imd *imdraw.IMDraw, position pixel.Vec) {
+	imd.Color = color.RGBA{0, 0, 0, 30}
+	imd.Push(position)
+	imd.Circle(circle.radius, 0)
+	imd.Color = color.RGBA{0, 0, 0, 50}
+	imd.Push(position)
+	imd.Circle(circle.radius, 1)
 }
