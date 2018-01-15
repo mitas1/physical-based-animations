@@ -97,12 +97,7 @@ func (gui *GUI) MainLoop() {
 func (gui *GUI) handleClick(x, y float64) {
 	y = winHeight - y
 	for _, widget := range gui.widgets {
-		x1, y1, x2, y2 := widget.bounds.Min.X, widget.bounds.Min.Y,
-			widget.bounds.Max.X, widget.bounds.Max.Y
-
-		x0, y0 := widget.position.XY()
-
-		if x > x0+x1 && x < x0+x2 && y > y0+y1 && y < y0+y2 {
+		if isInsideBoundingBox(x, y, widget.bounds, widget.position) {
 			widget.onClick(gui.state)
 		}
 	}
@@ -207,7 +202,8 @@ func (gui *GUI) Draw() {
 		x0, y0 := widget.position.XY()
 		x1, y1 := widget.bounds.Center().XY()
 		if widget.isActive {
-			widget.spriteActive.Draw(gui.batch, gui.matrix.Moved(pixel.V(x0, -y0).Sub(pixel.V(-x1, y1))))
+			widget.spriteActive.Draw(gui.batch, gui.matrix.Moved(pixel.V(x0, -y0).Sub(
+				pixel.V(-x1, y1))))
 		} else {
 			widget.sprite.Draw(gui.batch, gui.matrix.Moved(pixel.V(x0, -y0).Sub(pixel.V(-x1, y1))))
 		}

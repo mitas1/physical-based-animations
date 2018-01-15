@@ -64,3 +64,9 @@ type ParticleSystem struct {
 	angle     *Parameter // in degrees
 	particles []Particle
 }
+
+// Circle represents colliding object
+type Circle struct {
+	position pixel.Vec
+	radius   float64
+}
