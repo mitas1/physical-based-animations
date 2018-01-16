@@ -163,9 +163,10 @@ func run() {
 	const timeControlButtonY = 420
 
 	gui := GUI{
-		win:    win,
-		atlas:  text.NewAtlas(basicfont.Face7x13, text.ASCII),
-		canvas: pixelgl.NewCanvas(pixel.R(0, 0, guiCanvasWidth, win.Bounds().Max.Y)),
+		win:       win,
+		atlas:     text.NewAtlas(basicfont.Face7x13, text.ASCII),
+		canvas:    pixelgl.NewCanvas(pixel.R(0, 0, guiCanvasWidth, win.Bounds().Max.Y)),
+		textScale: 1.5,
 	}
 
 	gui.CreateBatch("assets/sprites/spritesheet.png")
