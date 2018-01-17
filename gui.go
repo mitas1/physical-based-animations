@@ -213,10 +213,7 @@ func (gui *GUI) Draw() {
 
 // DrawText draws text widgets to gui text batch
 func (gui *GUI) DrawText(target pixel.Target) {
-	scale := 1.0
-	if gui.textScale != 0 {
-		scale = gui.textScale
-	}
+	scale := 0.3
 
 	for _, t := range gui.texts {
 		x0, y0 := t.position.XY()
@@ -228,13 +225,13 @@ func (gui *GUI) DrawText(target pixel.Target) {
 
 		t.widget.Draw(
 			gui.win,
-			gui.matrix.Moved(pixel.V(
-				x0*(scale+0.1)*2, // 0.1 is for manual centering of the enlarged text, no other reason for this constant
-				-y0/scale,
-			)).Scaled(
+			gui.matrix.Scaled(
 				gui.win.Bounds().Center(),
 				scale,
-			))
+			).Moved(pixel.V(
+				-x0*4.5, // 4.5 is for manual centering of the enlarged text, no other reason for this constant
+				-y0,
+			)))
 	}
 
 }
