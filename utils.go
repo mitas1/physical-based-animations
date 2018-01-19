@@ -5,8 +5,6 @@ import (
 	"image"
 	"image/color"
 	_ "image/png"
-	"io/ioutil"
-	"os"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
@@ -53,18 +51,15 @@ func (circle *Circle) draw(imd *imdraw.IMDraw, position pixel.Vec) {
 }
 
 func loadTTF(path string, size float64) (font.Face, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	bytes, err := ioutil.ReadAll(file)
+	file, err := Asset(path)
 	if err != nil {
 		return nil, err
 	}
 
-	font, err := truetype.Parse(bytes)
+	buf := new(bytes.Buffer)
+	buf.Write(file)
+
+	font, err := truetype.Parse(buf.Bytes())
 	if err != nil {
 		return nil, err
 	}
