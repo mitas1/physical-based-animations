@@ -59,7 +59,7 @@ Provided `CC` for will not be used if the target is current platform, instead it
 ### Recommended cross compilers
 
 - For compiling from `Linux` to `Darwin` we recommend using [osxcross](https://github.com/tpoechtrager/osxcross).
-- For compiling from `Linux` to `Windows` we recommend using [wingw-w64-gcc](https://github.com/cbeck88/mingw-w64-gcc-linux).
+- For compiling from `Linux` to `Windows` we recommend using [mingw-w64-gcc](https://github.com/cbeck88/mingw-w64-gcc-linux).
 - Other cross compilers may work but are not tested
 
 ## Authors
