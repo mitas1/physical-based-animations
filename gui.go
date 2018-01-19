@@ -58,6 +58,7 @@ type GUI struct {
 	batch       *pixel.Batch
 	spritesheet pixel.Picture
 	canvas      *pixelgl.Canvas
+	textScale   float64
 }
 
 // HandledOptions define options which may be controlled by gui elements
@@ -212,6 +213,8 @@ func (gui *GUI) Draw() {
 
 // DrawText draws text widgets to gui text batch
 func (gui *GUI) DrawText(target pixel.Target) {
+	scale := 0.3
+
 	for _, t := range gui.texts {
 		x0, y0 := t.position.XY()
 
@@ -220,7 +223,15 @@ func (gui *GUI) DrawText(target pixel.Target) {
 
 		t.widget.WriteString(fmt.Sprintf(t.format, float64(t.text.value)))
 
-		t.widget.Draw(gui.win, gui.matrix.Moved(pixel.V(x0, -y0)))
+		t.widget.Draw(
+			gui.win,
+			gui.matrix.Scaled(
+				gui.win.Bounds().Center(),
+				scale,
+			).Moved(pixel.V(
+				-x0*4.5, // 4.5 is for manual centering of the enlarged text, no other reason for this constant
+				-y0,
+			)))
 	}
 
 }

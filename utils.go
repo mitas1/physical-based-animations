@@ -5,9 +5,13 @@ import (
 	"image"
 	"image/color"
 	_ "image/png"
+	"io/ioutil"
+	"os"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
+	"github.com/golang/freetype/truetype"
+	"golang.org/x/image/font"
 )
 
 func loadPicture(imagePath string) (pixel.Picture, error) {
@@ -46,4 +50,27 @@ func (circle *Circle) draw(imd *imdraw.IMDraw, position pixel.Vec) {
 	imd.Color = color.RGBA{0, 0, 0, 50}
 	imd.Push(position)
 	imd.Circle(circle.radius, 1)
+}
+
+func loadTTF(path string, size float64) (font.Face, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	bytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+
+	font, err := truetype.Parse(bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return truetype.NewFace(font, &truetype.Options{
+		Size:              size,
+		GlyphCacheEntries: 1,
+	}), nil
 }

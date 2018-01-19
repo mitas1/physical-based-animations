@@ -11,7 +11,6 @@ import (
 	"github.com/faiface/pixel/text"
 
 	"golang.org/x/image/colornames"
-	"golang.org/x/image/font/basicfont"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
@@ -88,6 +87,13 @@ func run() {
 		panic(err)
 	}
 
+	face, err := loadTTF("assets/font/Roboto-Regular.ttf", 52)
+	if err != nil {
+		panic(err)
+	}
+
+	atlas := text.NewAtlas(face, text.ASCII)
+
 	win.SetSmooth(true)
 
 	particleImage, err := loadPicture("assets/sprites/particle.png")
@@ -163,9 +169,10 @@ func run() {
 	const timeControlButtonY = 420
 
 	gui := GUI{
-		win:    win,
-		atlas:  text.NewAtlas(basicfont.Face7x13, text.ASCII),
-		canvas: pixelgl.NewCanvas(pixel.R(0, 0, guiCanvasWidth, win.Bounds().Max.Y)),
+		win:       win,
+		atlas:     atlas,
+		canvas:    pixelgl.NewCanvas(pixel.R(0, 0, guiCanvasWidth, win.Bounds().Max.Y)),
+		textScale: 1.5,
 	}
 
 	gui.CreateBatch("assets/sprites/spritesheet.png")
